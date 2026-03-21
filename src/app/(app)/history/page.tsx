@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { apiFetch } from "@/lib/session";
 
 interface Application {
   id: string;
@@ -49,7 +50,7 @@ export default function HistoryPage() {
   useEffect(() => {
     async function fetchHistory() {
       try {
-        const res = await fetch("/api/applications");
+        const res = await apiFetch("/api/applications");
         if (!res.ok) throw new Error("Failed to load history");
         const data = await res.json();
         setApplications(data.applications || []);

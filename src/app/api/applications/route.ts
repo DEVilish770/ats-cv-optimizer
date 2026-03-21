@@ -1,15 +1,11 @@
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const sessionId = request.headers.get("x-session-id") || "anonymous";
 
     const applications = await prisma.application.findMany({
-      where: { userId: session.user.id },
+      where: { sessionId },
       include: {
         job: true,
         cvVersion: true,

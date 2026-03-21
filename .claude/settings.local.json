@@ -3,7 +3,12 @@
     "allow": [
       "Bash(npx tsc:*)",
       "Bash(brew install:*)",
-      "Bash(gh auth:*)"
+      "Bash(gh auth:*)",
+      "Bash(npm list:*)",
+      "Bash(npm install:*)",
+      "Bash(vercel login:*)",
+      "Bash(vercel git:*)",
+      "Bash(grep -q '\"\"uuid\"\"' package.json)"
     ]
   }
 }

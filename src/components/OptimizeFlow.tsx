@@ -13,6 +13,7 @@ import {
   Download,
   ExternalLink,
 } from "lucide-react";
+import { apiFetch } from "@/lib/session";
 
 interface OptimizationResult {
   atsScore: number;
@@ -57,7 +58,7 @@ export default function OptimizeFlow({ jobId }: OptimizeFlowProps) {
 
         setCurrentStep("optimizing");
 
-        const res = await fetch(`/api/jobs/${jobId}/optimize`, {
+        const res = await apiFetch(`/api/jobs/${jobId}/optimize`, {
           method: "POST",
         });
 

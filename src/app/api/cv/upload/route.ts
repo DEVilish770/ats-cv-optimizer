@@ -1,13 +1,9 @@
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { processCV } from "@/lib/cv-parser";
 
 export async function POST(request: Request) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const sessionId = request.headers.get("x-session-id") || "anonymous";
 
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
@@ -37,7 +33,7 @@ export async function POST(request: Request) {
 
     const cv = await prisma.cV.create({
       data: {
-        userId: session.user.id,
+        sessionId,
         originalFileUrl: "local://uploaded",
         originalType: type,
         rawText,

@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import JobCard from "@/components/JobCard";
 import { Button } from "@/components/ui/button";
 import { Loader2, Upload, Search } from "lucide-react";
+import { apiFetch } from "@/lib/session";
 
 interface Job {
   id: string;
@@ -22,6 +23,21 @@ interface Job {
 }
 
 export default function JobsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-col items-center justify-center py-20">
+          <Loader2 className="mb-4 h-8 w-8 animate-spin text-blue-600" />
+          <p className="text-lg font-medium text-slate-900">Loading...</p>
+        </div>
+      }
+    >
+      <JobsContent />
+    </Suspense>
+  );
+}
+
+function JobsContent() {
   const searchParams = useSearchParams();
   const cvId = searchParams.get("cvId");
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -39,7 +55,7 @@ export default function JobsPage() {
           ? `/api/jobs/search?cvId=${cvId}`
           : "/api/jobs/search";
 
-        const res = await fetch(url);
+        const res = await apiFetch(url);
 
         if (res.status === 404) {
           setNoCv(true);

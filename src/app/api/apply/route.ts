@@ -1,13 +1,7 @@
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { applicationId } = await request.json();
 
     if (!applicationId) {
@@ -27,10 +21,6 @@ export async function POST(request: Request) {
         { error: "Application not found" },
         { status: 404 }
       );
-    }
-
-    if (application.userId !== session.user.id) {
-      return Response.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     const updated = await prisma.application.update({

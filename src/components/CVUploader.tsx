@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Camera, Image as ImageIcon, FileText, Loader2, CheckCircle } from "lucide-react";
 import CameraCapture from "@/components/CameraCapture";
+import { apiFetch } from "@/lib/session";
 
 interface ParsedCV {
   id: string;
@@ -56,7 +57,7 @@ export default function CVUploader({ onUploadComplete }: CVUploaderProps) {
         setProgress((prev) => Math.min(prev + 10, 90));
       }, 200);
 
-      const res = await fetch("/api/cv/upload", {
+      const res = await apiFetch("/api/cv/upload", {
         method: "POST",
         body: formData,
       });

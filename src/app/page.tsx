@@ -39,7 +39,7 @@ export default function LandingPage() {
           <p className="mb-8 text-lg text-slate-300 sm:text-xl">
             Upload your CV. Find matching jobs. Get hired.
           </p>
-          <Link href="/login">
+          <Link href="/upload">
             <Button
               size="lg"
               className="h-12 w-full max-w-xs rounded-full bg-blue-600 text-base font-semibold text-white hover:bg-blue-500 sm:w-auto sm:px-8"

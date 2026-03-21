@@ -1,4 +1,3 @@
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { analyzeJobRequirements, optimizeCV } from "@/lib/claude";
 import { generateATSPdf } from "@/lib/pdf-generator";
@@ -6,10 +5,7 @@ import type { CVStructured, JobRequirements } from "@/types";
 
 export async function POST(request: Request) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const sessionId = request.headers.get("x-session-id") || "anonymous";
 
     const { cvId, jobId } = await request.json();
 
@@ -20,17 +16,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Load CV and verify ownership
+    // Load CV
     const cv = await prisma.cV.findUnique({
       where: { id: cvId },
     });
 
     if (!cv) {
       return Response.json({ error: "CV not found" }, { status: 404 });
-    }
-
-    if (cv.userId !== session.user.id) {
-      return Response.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     // Load job
@@ -83,7 +75,7 @@ export async function POST(request: Request) {
     // Create Application record
     const application = await prisma.application.create({
       data: {
-        userId: session.user.id,
+        sessionId,
         jobId,
         cvVersionId: cvVersion.id,
         status: "optimized",

@@ -16,6 +16,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+import { apiFetch } from "@/lib/session";
 
 interface JobDetail {
   id: string;
@@ -48,7 +49,7 @@ export default function JobDetailPage() {
   useEffect(() => {
     async function fetchJob() {
       try {
-        const res = await fetch(`/api/jobs/${jobId}`);
+        const res = await apiFetch(`/api/jobs/${jobId}`);
         if (!res.ok) throw new Error("Job not found");
         const data = await res.json();
         setJob(data.job);

@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Upload, Briefcase, Clock, User } from "lucide-react";
+import { Upload, Briefcase, Clock } from "lucide-react";
 
 const navItems = [
   { href: "/upload", label: "Upload", icon: Upload },
   { href: "/jobs", label: "Jobs", icon: Briefcase },
   { href: "/history", label: "History", icon: Clock },
-  { href: "/profile", label: "Profile", icon: User },
 ];
 
 export default function BottomNav() {

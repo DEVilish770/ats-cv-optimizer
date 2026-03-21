@@ -1,14 +1,8 @@
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { searchJobsForCV, searchAdzunaJobs } from "@/lib/job-search";
 
 export async function GET(request: Request) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { searchParams } = new URL(request.url);
     const cvId = searchParams.get("cvId");
     const q = searchParams.get("q");
@@ -23,10 +17,6 @@ export async function GET(request: Request) {
 
       if (!cv) {
         return Response.json({ error: "CV not found" }, { status: 404 });
-      }
-
-      if (cv.userId !== session.user.id) {
-        return Response.json({ error: "Unauthorized" }, { status: 403 });
       }
 
       searchResults = await searchJobsForCV(
