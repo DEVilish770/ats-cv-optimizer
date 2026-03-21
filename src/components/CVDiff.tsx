@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronDown, ChevronUp, Plus, RefreshCw } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  RefreshCw,
+  Briefcase,
+} from "lucide-react";
 
 interface DiffSection {
   name: string;
@@ -15,6 +21,64 @@ interface DiffSection {
 
 interface CVDiffProps {
   sections: DiffSection[];
+}
+
+function SectionDiffContent({ section }: { section: DiffSection }) {
+  const isNewContent = !section.original;
+
+  return (
+    <div className="space-y-3">
+      {/* What changed — ATS improvement explanation */}
+      {section.changeDescriptions.length > 0 && (
+        <div className="rounded-lg border border-blue-100 bg-blue-50/50 p-3">
+          <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-blue-600">
+            ATS Improvements Made
+          </p>
+          <ul className="space-y-1 text-sm text-slate-700">
+            {section.changeDescriptions.map((desc, i) => (
+              <li key={i} className="flex gap-2">
+                <span className="mt-1 block h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400" />
+                <span>{desc}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Before / After comparison */}
+      {isNewContent ? (
+        // New section — just show the added content
+        <div className="rounded-lg border border-green-200 bg-green-50 p-3">
+          <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-green-600">
+            Added to your CV
+          </p>
+          <p className="whitespace-pre-line text-sm leading-relaxed text-slate-800">
+            {section.optimized}
+          </p>
+        </div>
+      ) : (
+        // Existing section — show side by side
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
+              Your original
+            </p>
+            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600">
+              {section.original}
+            </p>
+          </div>
+          <div className="rounded-lg border border-green-200 bg-green-50 p-3">
+            <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-green-600">
+              ATS-optimized version
+            </p>
+            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-800">
+              {section.optimized}
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function CVDiff({ sections }: CVDiffProps) {
@@ -42,17 +106,13 @@ export default function CVDiff({ sections }: CVDiffProps) {
     });
   }
 
-  // Group sections: experience entries together, others standalone
-  const experienceSections = sections.filter(
-    (s) => s.section.toLowerCase() === "experience"
-  );
-  const otherSections = sections.filter(
-    (s) => s.section.toLowerCase() !== "experience"
-  );
+  // Separate experience from other sections
+  const experienceSections = sections.filter((s) => s.section === "experience");
+  const otherSections = sections.filter((s) => s.section !== "experience");
 
   return (
     <div className="space-y-3">
-      {/* Non-experience sections */}
+      {/* Non-experience sections (summary, skills, education, etc.) */}
       {otherSections.map((section) => {
         const globalIndex = sections.indexOf(section);
         const isExpanded = expandedSections.has(globalIndex);
@@ -73,72 +133,37 @@ export default function CVDiff({ sections }: CVDiffProps) {
                 <span className="font-semibold text-slate-900">
                   {section.name}
                 </span>
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
-                  {isNewContent ? "Added" : "Updated"}
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs ${
+                    isNewContent
+                      ? "bg-green-100 text-green-700"
+                      : "bg-blue-50 text-blue-600"
+                  }`}
+                >
+                  {isNewContent ? "New section added" : "Optimized for ATS"}
                 </span>
               </div>
               {isExpanded ? (
-                <ChevronUp className="h-4 w-4 text-slate-400" />
+                <ChevronUp className="h-4 w-4 shrink-0 text-slate-400" />
               ) : (
-                <ChevronDown className="h-4 w-4 text-slate-400" />
+                <ChevronDown className="h-4 w-4 shrink-0 text-slate-400" />
               )}
             </button>
 
             {isExpanded && (
               <CardContent className="border-t px-4 pb-4 pt-3">
-                {/* What changed */}
-                {section.changeDescriptions.length > 0 && (
-                  <div className="mb-3">
-                    <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-400">
-                      What changed
-                    </p>
-                    <ul className="list-inside list-disc space-y-0.5 text-sm text-slate-600">
-                      {section.changeDescriptions.map((desc, i) => (
-                        <li key={i}>{desc}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {/* Original */}
-                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                    <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-slate-400">
-                      Before
-                    </p>
-                    {section.original ? (
-                      <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600">
-                        {section.original}
-                      </p>
-                    ) : (
-                      <p className="text-sm italic text-slate-400">
-                        No existing content — this section was added during
-                        optimization
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Optimized */}
-                  <div className="rounded-lg border border-green-200 bg-green-50 p-3">
-                    <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-green-600">
-                      After
-                    </p>
-                    <p className="whitespace-pre-line text-sm leading-relaxed text-slate-800">
-                      {section.optimized}
-                    </p>
-                  </div>
-                </div>
+                <SectionDiffContent section={section} />
               </CardContent>
             )}
           </Card>
         );
       })}
 
-      {/* Experience sections grouped */}
+      {/* Experience sections — grouped under one card */}
       {experienceSections.length > 0 && (
         <Card className="overflow-hidden">
           <div className="flex items-center gap-2 border-b bg-slate-50 p-4">
-            <RefreshCw className="h-4 w-4 text-blue-600" />
+            <Briefcase className="h-4 w-4 text-blue-600" />
             <span className="font-semibold text-slate-900">
               Work Experience
             </span>
@@ -178,38 +203,7 @@ export default function CVDiff({ sections }: CVDiffProps) {
 
                   {isExpanded && (
                     <div className="border-t bg-white px-4 pb-4 pt-3">
-                      {/* What changed */}
-                      {section.changeDescriptions.length > 0 && (
-                        <div className="mb-3">
-                          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-slate-400">
-                            What changed
-                          </p>
-                          <ul className="list-inside list-disc space-y-0.5 text-sm text-slate-600">
-                            {section.changeDescriptions.map((desc, i) => (
-                              <li key={i}>{desc}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                          <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-slate-400">
-                            Before
-                          </p>
-                          <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600">
-                            {section.original || "No changes to original"}
-                          </p>
-                        </div>
-                        <div className="rounded-lg border border-green-200 bg-green-50 p-3">
-                          <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-green-600">
-                            After
-                          </p>
-                          <p className="whitespace-pre-line text-sm leading-relaxed text-slate-800">
-                            {section.optimized}
-                          </p>
-                        </div>
-                      </div>
+                      <SectionDiffContent section={section} />
                     </div>
                   )}
                 </div>

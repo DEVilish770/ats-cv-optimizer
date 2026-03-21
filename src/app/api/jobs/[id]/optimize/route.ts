@@ -85,8 +85,10 @@ export async function POST(
     });
 
     // Transform diffData for the client
-    // Use experience titles from optimized CV data for labeling
-    const experienceTitles = optimizationResult.optimizedData?.experience || [];
+    // Use BOTH original and optimized experience arrays for title labeling
+    const originalExperience = cvData.experience || [];
+    const optimizedExperience =
+      optimizationResult.optimizedData?.experience || [];
     let experienceIndex = 0;
 
     const diff = (optimizationResult.diffData || []).map(
@@ -98,24 +100,36 @@ export async function POST(
       }) => {
         let name = d.section;
         let subtitle: string | undefined;
+        const sectionLower = d.section.toLowerCase();
 
-        // For experience sections, use the actual job title + company
-        if (d.section.toLowerCase() === "experience") {
-          const exp = experienceTitles[experienceIndex];
+        // For experience sections, use actual job title + company
+        if (sectionLower === "experience" || sectionLower.startsWith("experience")) {
+          // Try original first (most reliable), fall back to optimized
+          const exp =
+            originalExperience[experienceIndex] ||
+            optimizedExperience[experienceIndex];
           if (exp) {
-            name = exp.title || "Role";
+            name = exp.title || `Role ${experienceIndex + 1}`;
             subtitle = exp.company || undefined;
+          } else {
+            name = `Role ${experienceIndex + 1}`;
           }
           experienceIndex++;
         } else {
-          // Capitalize section name
-          name = d.section.charAt(0).toUpperCase() + d.section.slice(1);
+          // Capitalize and clean up section name
+          name = sectionLower === "summary"
+            ? "Professional Summary"
+            : sectionLower === "skills"
+              ? "Skills"
+              : sectionLower === "education"
+                ? "Education"
+                : d.section.charAt(0).toUpperCase() + d.section.slice(1);
         }
 
         return {
           name,
           subtitle,
-          section: d.section,
+          section: sectionLower.startsWith("experience") ? "experience" : sectionLower,
           original: d.original || "",
           optimized: d.optimized || "",
           changeDescriptions: d.changes || [],
