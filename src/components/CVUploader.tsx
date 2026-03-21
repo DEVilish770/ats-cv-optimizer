@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Camera, Image as ImageIcon, FileText, Loader2, CheckCircle } from "lucide-react";
+import { Camera, Image as ImageIcon, FileText, Loader2 } from "lucide-react";
 import CameraCapture from "@/components/CameraCapture";
 import { apiFetch } from "@/lib/session";
 
@@ -145,120 +144,7 @@ export default function CVUploader({ onUploadComplete }: CVUploaderProps) {
     );
   }
 
-  if (state === "done" && parsedCV) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-green-600">
-          <CheckCircle className="h-5 w-5" />
-          <span className="font-medium">CV Parsed Successfully</span>
-        </div>
-
-        {/* Contact Info */}
-        {parsedCV.sections.contactInfo && (
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="mb-2 text-sm font-semibold uppercase text-slate-500">
-                Contact
-              </h3>
-              <div className="space-y-1 text-sm text-slate-700">
-                {Object.entries(parsedCV.sections.contactInfo).map(
-                  ([key, value]) => (
-                    <p key={key}>
-                      <span className="font-medium capitalize">{key}:</span>{" "}
-                      {value}
-                    </p>
-                  )
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Summary */}
-        {parsedCV.sections.summary && (
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="mb-2 text-sm font-semibold uppercase text-slate-500">
-                Summary
-              </h3>
-              <p className="text-sm leading-relaxed text-slate-700">
-                {parsedCV.sections.summary}
-              </p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Experience */}
-        {parsedCV.sections.experience?.length > 0 && (
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="mb-3 text-sm font-semibold uppercase text-slate-500">
-                Experience
-              </h3>
-              <div className="space-y-4">
-                {parsedCV.sections.experience.map((exp, i) => (
-                  <div
-                    key={i}
-                    className="border-l-2 border-blue-200 pl-3"
-                  >
-                    <p className="font-medium text-slate-900">{exp.title}</p>
-                    <p className="text-sm text-slate-600">
-                      {exp.company} &middot; {exp.period}
-                    </p>
-                    <p className="mt-1 text-sm text-slate-500">
-                      {exp.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Education */}
-        {parsedCV.sections.education?.length > 0 && (
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="mb-3 text-sm font-semibold uppercase text-slate-500">
-                Education
-              </h3>
-              <div className="space-y-2">
-                {parsedCV.sections.education.map((edu, i) => (
-                  <div key={i}>
-                    <p className="font-medium text-slate-900">{edu.degree}</p>
-                    <p className="text-sm text-slate-500">
-                      {edu.institution} &middot; {edu.year}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Skills */}
-        {parsedCV.sections.skills?.length > 0 && (
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="mb-3 text-sm font-semibold uppercase text-slate-500">
-                Skills
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {parsedCV.sections.skills.map((skill, i) => (
-                  <span
-                    key={i}
-                    className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-    );
-  }
+  // "done" state is handled by the parent via onUploadComplete redirect
 
   // Idle state - show upload options
   return (
