@@ -1,22 +1,41 @@
+import Anthropic from "@anthropic-ai/sdk";
 import { parseCV } from "./claude";
 
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
-  // pdf-parse v2 uses a class-based API
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { PDFParse } = require("pdf-parse");
-  const parser = new PDFParse({ data: new Uint8Array(buffer) });
-  const result = await parser.getText();
-  await parser.destroy();
-  return result.text;
+  // Use Claude's native PDF reading — no server-side PDF library needed
+  const base64 = buffer.toString("base64");
+  const response = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 4096,
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "document",
+            source: {
+              type: "base64",
+              media_type: "application/pdf",
+              data: base64,
+            },
+          },
+          {
+            type: "text",
+            text: "Extract ALL text from this CV/resume PDF. Preserve the structure and formatting as much as possible. Return only the extracted text, nothing else.",
+          },
+        ],
+      },
+    ],
+  });
+
+  return response.content[0].type === "text" ? response.content[0].text : "";
 }
 
 export async function extractTextFromImage(base64Image: string): Promise<string> {
-  // Use Claude's vision capability to extract text from images
-  const Anthropic = (await import("@anthropic-ai/sdk")).default;
-  const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  });
-
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 4096,
@@ -53,7 +72,6 @@ export async function processCV(
   if (fileType === "pdf") {
     rawText = await extractTextFromPDF(fileBuffer);
   } else {
-    // For photos and camera captures, use Claude Vision OCR
     const base64 = fileBuffer.toString("base64");
     rawText = await extractTextFromImage(base64);
   }
