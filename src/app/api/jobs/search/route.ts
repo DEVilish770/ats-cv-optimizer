@@ -33,10 +33,10 @@ export async function GET(request: Request) {
       );
     }
 
-    // Upsert jobs into the database
+    // Upsert jobs into the database and preserve relevance scores
     const jobs = await Promise.all(
       searchResults.map(async (job) => {
-        return prisma.job.upsert({
+        const dbJob = await prisma.job.upsert({
           where: {
             externalId_source: {
               externalId: job.externalId,
@@ -68,10 +68,14 @@ export async function GET(request: Request) {
             postedAt: job.postedAt ? new Date(job.postedAt) : null,
           },
         });
+        return {
+          ...dbJob,
+          relevanceScore: (job as unknown as { relevanceScore?: number }).relevanceScore,
+        };
       })
     );
 
-    return Response.json(jobs);
+    return Response.json({ jobs });
   } catch (error) {
     console.error("Job search error:", error);
     return Response.json(
