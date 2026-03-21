@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { searchJobsForCV, searchAdzunaJobs } from "@/lib/job-search";
 
+export const maxDuration = 30; // Allow up to 30 seconds on Vercel
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -30,7 +32,6 @@ export async function GET(request: Request) {
     } else if (q) {
       searchResults = await searchAdzunaJobs(q, location);
     } else {
-      // No cvId or query — find the latest CV for this session
       const latestCv = await prisma.cV.findFirst({
         where: { sessionId },
         orderBy: { createdAt: "desc" },
@@ -49,10 +50,16 @@ export async function GET(request: Request) {
       );
     }
 
-    // Upsert jobs into the database and preserve relevance scores
-    const jobs = await Promise.all(
-      searchResults.map(async (job) => {
-        const dbJob = await prisma.job.upsert({
+    console.log(`[Search] Got ${searchResults.length} results from Adzuna`);
+
+    if (searchResults.length === 0) {
+      return Response.json({ jobs: [], count: 0 });
+    }
+
+    // Save all jobs to DB in a single transaction (faster than individual upserts)
+    const jobs = await prisma.$transaction(
+      searchResults.map((job) =>
+        prisma.job.upsert({
           where: {
             externalId_source: {
               externalId: job.externalId,
@@ -83,16 +90,18 @@ export async function GET(request: Request) {
             salaryMax: job.salaryMax || null,
             postedAt: job.postedAt ? new Date(job.postedAt) : null,
           },
-        });
-        return {
-          ...dbJob,
-          relevanceScore: (job as unknown as { relevanceScore?: number }).relevanceScore,
-        };
-      })
+        })
+      )
     );
 
-    console.log(`[Search] Returning ${jobs.length} jobs`);
-    return Response.json({ jobs, count: jobs.length });
+    // Add relevance scores from search results
+    const jobsWithScores = jobs.map((dbJob, i) => ({
+      ...dbJob,
+      relevanceScore: (searchResults[i] as unknown as { relevanceScore?: number }).relevanceScore,
+    }));
+
+    console.log(`[Search] Returning ${jobsWithScores.length} jobs`);
+    return Response.json({ jobs: jobsWithScores, count: jobsWithScores.length });
   } catch (error) {
     console.error("Job search error:", error);
     const message =

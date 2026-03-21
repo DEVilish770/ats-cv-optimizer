@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { processCV } from "@/lib/cv-parser";
 
+export const maxDuration = 60; // Claude PDF extraction + parsing can take time
+
 export async function POST(request: Request) {
   try {
     const sessionId = request.headers.get("x-session-id") || "anonymous";
