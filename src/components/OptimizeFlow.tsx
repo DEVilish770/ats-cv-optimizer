@@ -62,11 +62,11 @@ export default function OptimizeFlow({ jobId }: OptimizeFlowProps) {
           method: "POST",
         });
 
-        if (!res.ok) {
-          throw new Error("Optimization failed");
-        }
-
         const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Optimization failed");
+        }
 
         setCurrentStep("generating");
         await new Promise((r) => setTimeout(r, 800));
