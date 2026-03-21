@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// NextAuth models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// App models
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String?
+  image         String?
+  emailVerified DateTime?
+  passwordHash  String?
+  accounts      Account[]
+  sessions      Session[]
+  cvs           CV[]
+  applications  Application[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model CV {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originalFileUrl String
+  originalType    String
+  rawText         String      @db.Text
+  structured      Json
+  targetRole      String?
+  targetSkills    String[]
+  versions        CVVersion[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model CVVersion {
+  id            String       @id @default(cuid())
+  cvId          String
+  cv            CV           @relation(fields: [cvId], references: [id], onDelete: Cascade)
+  jobId         String
+  job           Job          @relation(fields: [jobId], references: [id])
+  optimizedData Json
+  diffData      Json
+  atsScore      Int
+  pdfUrl        String?
+  application   Application?
+  createdAt     DateTime     @default(now())
+}
+
+model Job {
+  id           String        @id @default(cuid())
+  externalId   String
+  source       String
+  title        String
+  company      String
+  location     String?
+  jobType      String?
+  description  String        @db.Text
+  url          String
+  salaryMin    Int?
+  salaryMax    Int?
+  requirements Json?
+  postedAt     DateTime?
+  scrapedAt    DateTime      @default(now())
+  cvVersions   CVVersion[]
+  applications Application[]
+
+  @@unique([externalId, source])
+}
+
+model Application {
+  id          String     @id @default(cuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobId       String
+  job         Job        @relation(fields: [jobId], references: [id])
+  cvVersionId String?    @unique
+  cvVersion   CVVersion? @relation(fields: [cvVersionId], references: [id])
+  status      String     @default("optimized")
+  appliedAt   DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@unique([userId, jobId])
+}
