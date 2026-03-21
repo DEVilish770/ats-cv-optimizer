@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { CVStructured, JobRequirements, OptimizationResult, SectionDiff } from "@/types";
+import type { CVStructured, JobRequirements, OptimizationResult } from "@/types";
 
 function getClient() {
   return new Anthropic();

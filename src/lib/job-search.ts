@@ -91,7 +91,7 @@ export async function searchJobsForCV(
 ): Promise<JobSearchResult[]> {
   // Build a search query from the CV's target role and top skills
   const skillsQuery = targetSkills.slice(0, 3).join(" ");
-  let query = `${targetRole} ${skillsQuery}`.trim();
+  const query = `${targetRole} ${skillsQuery}`.trim();
 
   // If query is still empty, can't search
   if (!query) {
