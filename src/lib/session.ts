@@ -12,6 +12,19 @@ export function getSessionId(): string {
 
 export async function apiFetch(url: string, options: RequestInit = {}) {
   const sessionId = getSessionId();
+
+  // For FormData, don't use Headers constructor as it can strip the
+  // auto-generated Content-Type boundary. Just merge the session header.
+  if (options.body instanceof FormData) {
+    return fetch(url, {
+      ...options,
+      headers: {
+        "x-session-id": sessionId,
+        // Don't set Content-Type — browser sets it with boundary for FormData
+      },
+    });
+  }
+
   const headers = new Headers(options.headers);
   headers.set("x-session-id", sessionId);
   return fetch(url, { ...options, headers });

@@ -43,14 +43,17 @@ export default function CVUploader({ onUploadComplete }: CVUploaderProps) {
   const photoInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
 
-  async function uploadFile(file: File) {
+  async function uploadFile(file: File, uploadType?: "pdf" | "photo" | "camera") {
     setState("uploading");
     setProgress(0);
     setError("");
 
     try {
+      // Determine type from file or override
+      const type = uploadType || (file.type === "application/pdf" ? "pdf" : "photo");
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("type", type);
 
       // Simulate upload progress
       const progressInterval = setInterval(() => {
@@ -91,7 +94,7 @@ export default function CVUploader({ onUploadComplete }: CVUploaderProps) {
 
   function handleCameraCapture(file: File) {
     setShowCamera(false);
-    uploadFile(file);
+    uploadFile(file, "camera");
   }
 
   if (showCamera) {
