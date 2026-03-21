@@ -1,11 +1,13 @@
 import { parseCV } from "./claude";
 
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
-  // Dynamic import to avoid issues with server components
+  // pdf-parse v2 uses a class-based API
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const pdfParse = require("pdf-parse") as (buffer: Buffer) => Promise<{ text: string }>;
-  const data = await pdfParse(buffer);
-  return data.text;
+  const { PDFParse } = require("pdf-parse");
+  const parser = new PDFParse({ data: new Uint8Array(buffer) });
+  const result = await parser.getText();
+  await parser.destroy();
+  return result.text;
 }
 
 export async function extractTextFromImage(base64Image: string): Promise<string> {

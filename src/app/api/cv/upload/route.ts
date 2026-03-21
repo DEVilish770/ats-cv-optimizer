@@ -46,8 +46,10 @@ export async function POST(request: Request) {
     return Response.json(cv, { status: 201 });
   } catch (error) {
     console.error("CV upload error:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to process CV";
     return Response.json(
-      { error: "Failed to process CV" },
+      { error: message },
       { status: 500 }
     );
   }
