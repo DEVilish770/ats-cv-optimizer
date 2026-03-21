@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { analyzeJobRequirements, optimizeCV } from "@/lib/claude";
-import { generateATSPdf } from "@/lib/pdf-generator";
 import type { CVStructured, JobRequirements } from "@/types";
 
 export const maxDuration = 60;
@@ -55,11 +54,6 @@ export async function POST(
       job.description
     );
 
-    // Generate ATS-friendly PDF
-    const pdfBuffer = await generateATSPdf(optimizationResult.optimizedData);
-    void pdfBuffer;
-    const pdfUrl = `local://optimized-cv-${Date.now()}.pdf`;
-
     // Create CVVersion
     const cvVersion = await prisma.cVVersion.create({
       data: {
@@ -70,13 +64,19 @@ export async function POST(
         ),
         diffData: JSON.parse(JSON.stringify(optimizationResult.diffData)),
         atsScore: optimizationResult.atsScore,
-        pdfUrl,
       },
     });
 
-    // Create Application record
-    await prisma.application.create({
-      data: {
+    // Upsert Application record (unique on sessionId+jobId, so re-optimizing works)
+    await prisma.application.upsert({
+      where: {
+        sessionId_jobId: { sessionId, jobId },
+      },
+      update: {
+        cvVersionId: cvVersion.id,
+        status: "optimized",
+      },
+      create: {
         sessionId,
         jobId,
         cvVersionId: cvVersion.id,
@@ -84,22 +84,26 @@ export async function POST(
       },
     });
 
-    // Transform diffData to match what the client expects:
-    // Client wants: { name, original, optimized, changes: Array<{type, value}> }
-    // API has: { section, original, optimized, changes: string[] }
-    //
-    // Fix duplicate section names (e.g., multiple "experience" entries)
-    // and use actual original/optimized text instead of change descriptions
+    // Transform diffData to match what the client expects
     const nameCounts: Record<string, number> = {};
     const diff = (optimizationResult.diffData || []).map(
-      (d: { section: string; original: string; optimized: string; changes: string[] }) => {
+      (d: {
+        section: string;
+        original: string;
+        optimized: string;
+        changes: string[];
+      }) => {
         // Deduplicate names: "experience" → "experience", "experience (2)", etc.
         const base = d.section;
         nameCounts[base] = (nameCounts[base] || 0) + 1;
-        const name = nameCounts[base] === 1 ? base : `${base} (${nameCounts[base]})`;
+        const name =
+          nameCounts[base] === 1 ? base : `${base} (${nameCounts[base]})`;
 
         // Build changes from actual text, not change descriptions
-        const changes: Array<{ type: "added" | "removed" | "unchanged"; value: string }> = [];
+        const changes: Array<{
+          type: "added" | "removed" | "unchanged";
+          value: string;
+        }> = [];
         if (d.original) {
           changes.push({ type: "removed", value: d.original });
         }
@@ -115,6 +119,9 @@ export async function POST(
         };
       }
     );
+
+    // PDF is generated on-demand via /api/cv-version/[id]/pdf
+    const pdfUrl = `/api/cv-version/${cvVersion.id}/pdf`;
 
     return Response.json({
       atsScore: optimizationResult.atsScore,

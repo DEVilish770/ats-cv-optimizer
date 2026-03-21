@@ -73,8 +73,10 @@ export default function OptimizeFlow({ jobId }: OptimizeFlowProps) {
 
         setResult(data);
         setCurrentStep("done");
-      } catch {
-        setError("Optimization failed. Please try again.");
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Optimization failed. Please try again."
+        );
         setCurrentStep("error");
       }
     }
