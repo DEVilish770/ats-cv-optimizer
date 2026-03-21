@@ -8,6 +8,7 @@ export async function GET(request: Request) {
     const q = searchParams.get("q");
     const location = searchParams.get("location") || undefined;
 
+    const sessionId = request.headers.get("x-session-id") || "anonymous";
     let searchResults;
 
     if (cvId) {
@@ -27,9 +28,20 @@ export async function GET(request: Request) {
     } else if (q) {
       searchResults = await searchAdzunaJobs(q, location);
     } else {
-      return Response.json(
-        { error: "Either cvId or q parameter is required" },
-        { status: 400 }
+      // No cvId or query — find the latest CV for this session
+      const latestCv = await prisma.cV.findFirst({
+        where: { sessionId },
+        orderBy: { createdAt: "desc" },
+      });
+
+      if (!latestCv) {
+        return Response.json({ error: "No CV found" }, { status: 404 });
+      }
+
+      searchResults = await searchJobsForCV(
+        latestCv.targetRole || "",
+        latestCv.targetSkills,
+        location
       );
     }
 
@@ -78,8 +90,10 @@ export async function GET(request: Request) {
     return Response.json({ jobs });
   } catch (error) {
     console.error("Job search error:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to search jobs";
     return Response.json(
-      { error: "Failed to search jobs" },
+      { error: message, jobs: [] },
       { status: 500 }
     );
   }
