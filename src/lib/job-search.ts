@@ -29,17 +29,19 @@ export async function searchAdzunaJobs(
   const appKey = process.env.ADZUNA_APP_KEY;
 
   if (!appId || !appKey) {
-    console.warn("Adzuna API credentials not configured, returning empty results");
-    return [];
+    throw new Error("Adzuna API credentials not configured");
   }
 
-  const country = "us"; // Default to US, can be made configurable
+  if (!query.trim()) {
+    throw new Error("Search query is empty");
+  }
+
+  const country = "us";
   const params = new URLSearchParams({
     app_id: appId,
     app_key: appKey,
     results_per_page: String(resultsPerPage),
-    what: query,
-    content_type: "application/json",
+    what: query.trim(),
   });
 
   if (location) {
@@ -48,14 +50,23 @@ export async function searchAdzunaJobs(
 
   const url = `https://api.adzuna.com/v1/api/jobs/${country}/search/${page}?${params}`;
 
+  console.log(`[Adzuna] Searching: query="${query.trim()}", country=${country}`);
+
   const response = await fetch(url);
 
   if (!response.ok) {
-    console.error("Adzuna API error:", response.status, await response.text());
-    return [];
+    const errorText = await response.text();
+    console.error(`[Adzuna] API error ${response.status}:`, errorText);
+    throw new Error(`Adzuna API error: ${response.status} - ${errorText.slice(0, 200)}`);
   }
 
   const data: AdzunaResponse = await response.json();
+
+  console.log(`[Adzuna] Found ${data.results?.length || 0} results (total: ${data.count})`);
+
+  if (!data.results || data.results.length === 0) {
+    return [];
+  }
 
   return data.results.map((job) => ({
     id: "",
@@ -80,7 +91,14 @@ export async function searchJobsForCV(
 ): Promise<JobSearchResult[]> {
   // Build a search query from the CV's target role and top skills
   const skillsQuery = targetSkills.slice(0, 3).join(" ");
-  const query = `${targetRole} ${skillsQuery}`.trim();
+  let query = `${targetRole} ${skillsQuery}`.trim();
+
+  // If query is still empty, can't search
+  if (!query) {
+    throw new Error("No target role or skills found in CV to search for jobs");
+  }
+
+  console.log(`[JobSearch] CV query: "${query}"`);
 
   const results = await searchAdzunaJobs(query, location, 1, 30);
 
@@ -91,9 +109,11 @@ export async function searchJobsForCV(
     let score = 0;
 
     // Check target role match in title
-    const roleWords = targetRole.toLowerCase().split(" ");
-    for (const word of roleWords) {
-      if (titleLower.includes(word)) score += 10;
+    if (targetRole) {
+      const roleWords = targetRole.toLowerCase().split(" ");
+      for (const word of roleWords) {
+        if (word.length > 2 && titleLower.includes(word)) score += 10;
+      }
     }
 
     // Check skill matches in description

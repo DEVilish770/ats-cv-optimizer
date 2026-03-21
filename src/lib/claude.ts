@@ -44,7 +44,23 @@ Return ONLY valid JSON, no markdown formatting.`,
 
   const text = response.content[0].type === "text" ? response.content[0].text : "";
   const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-  return JSON.parse(cleaned);
+  const parsed = JSON.parse(cleaned);
+
+  // Ensure targetRole and targetSkills are never empty
+  if (!parsed.targetRole && parsed.structured?.experience?.length > 0) {
+    // Derive from most recent job title
+    parsed.targetRole = parsed.structured.experience[0].title || "Professional";
+  }
+  if (!parsed.targetRole) {
+    parsed.targetRole = "Professional";
+  }
+  if (!parsed.targetSkills || parsed.targetSkills.length === 0) {
+    parsed.targetSkills = parsed.structured?.skills || ["professional"];
+  }
+
+  console.log(`[parseCV] targetRole="${parsed.targetRole}", skills=${parsed.targetSkills?.length}`);
+
+  return parsed;
 }
 
 export async function analyzeJobRequirements(

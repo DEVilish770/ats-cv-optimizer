@@ -63,14 +63,15 @@ function JobsContent() {
           return;
         }
 
+        const data = await res.json();
+
         if (!res.ok) {
-          throw new Error("Failed to fetch jobs");
+          throw new Error(data.error || "Failed to fetch jobs");
         }
 
-        const data = await res.json();
         setJobs(data.jobs || []);
-      } catch {
-        setError("Failed to load jobs. Please try again.");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load jobs. Please try again.");
       } finally {
         setLoading(false);
       }

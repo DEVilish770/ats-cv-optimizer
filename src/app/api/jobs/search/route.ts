@@ -17,12 +17,14 @@ export async function GET(request: Request) {
       });
 
       if (!cv) {
-        return Response.json({ error: "CV not found" }, { status: 404 });
+        return Response.json({ error: "CV not found", jobs: [] }, { status: 404 });
       }
+
+      console.log(`[Search] CV found: targetRole="${cv.targetRole}", skills=${cv.targetSkills?.length || 0}`);
 
       searchResults = await searchJobsForCV(
         cv.targetRole || "",
-        cv.targetSkills,
+        cv.targetSkills || [],
         location
       );
     } else if (q) {
@@ -35,12 +37,14 @@ export async function GET(request: Request) {
       });
 
       if (!latestCv) {
-        return Response.json({ error: "No CV found" }, { status: 404 });
+        return Response.json({ error: "No CV found", jobs: [] }, { status: 404 });
       }
+
+      console.log(`[Search] Latest CV: targetRole="${latestCv.targetRole}", skills=${latestCv.targetSkills?.length || 0}`);
 
       searchResults = await searchJobsForCV(
         latestCv.targetRole || "",
-        latestCv.targetSkills,
+        latestCv.targetSkills || [],
         location
       );
     }
@@ -87,6 +91,7 @@ export async function GET(request: Request) {
       })
     );
 
+    console.log(`[Search] Returning ${jobs.length} jobs`);
     return Response.json({ jobs });
   } catch (error) {
     console.error("Job search error:", error);
