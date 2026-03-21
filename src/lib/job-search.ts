@@ -100,7 +100,19 @@ export async function searchJobsForCV(
 
   console.log(`[JobSearch] CV query: "${query}"`);
 
-  const results = await searchAdzunaJobs(query, location, 1, 30);
+  let results = await searchAdzunaJobs(query, location, 1, 30);
+
+  // If combined query returns nothing, try just the target role
+  if (results.length === 0 && targetRole) {
+    console.log(`[JobSearch] No results, trying role only: "${targetRole}"`);
+    results = await searchAdzunaJobs(targetRole, location, 1, 30);
+  }
+
+  // If still nothing, try individual skills
+  if (results.length === 0 && targetSkills.length > 0) {
+    console.log(`[JobSearch] No results, trying first skill: "${targetSkills[0]}"`);
+    results = await searchAdzunaJobs(targetSkills[0], location, 1, 30);
+  }
 
   // Score relevance based on keyword overlap
   const scoredResults = results.map((job) => {

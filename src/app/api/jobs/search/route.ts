@@ -92,7 +92,7 @@ export async function GET(request: Request) {
     );
 
     console.log(`[Search] Returning ${jobs.length} jobs`);
-    return Response.json({ jobs });
+    return Response.json({ jobs, count: jobs.length });
   } catch (error) {
     console.error("Job search error:", error);
     const message =
