@@ -87,16 +87,33 @@ export async function POST(
     // Transform diffData to match what the client expects:
     // Client wants: { name, original, optimized, changes: Array<{type, value}> }
     // API has: { section, original, optimized, changes: string[] }
+    //
+    // Fix duplicate section names (e.g., multiple "experience" entries)
+    // and use actual original/optimized text instead of change descriptions
+    const nameCounts: Record<string, number> = {};
     const diff = (optimizationResult.diffData || []).map(
-      (d: { section: string; original: string; optimized: string; changes: string[] }) => ({
-        name: d.section,
-        original: d.original,
-        optimized: d.optimized,
-        changes: (d.changes || []).map((change: string) => ({
-          type: "added" as const,
-          value: change,
-        })),
-      })
+      (d: { section: string; original: string; optimized: string; changes: string[] }) => {
+        // Deduplicate names: "experience" → "experience", "experience (2)", etc.
+        const base = d.section;
+        nameCounts[base] = (nameCounts[base] || 0) + 1;
+        const name = nameCounts[base] === 1 ? base : `${base} (${nameCounts[base]})`;
+
+        // Build changes from actual text, not change descriptions
+        const changes: Array<{ type: "added" | "removed" | "unchanged"; value: string }> = [];
+        if (d.original) {
+          changes.push({ type: "removed", value: d.original });
+        }
+        if (d.optimized) {
+          changes.push({ type: "added", value: d.optimized });
+        }
+
+        return {
+          name,
+          original: d.original || "(no content)",
+          optimized: d.optimized,
+          changes,
+        };
+      }
     );
 
     return Response.json({
