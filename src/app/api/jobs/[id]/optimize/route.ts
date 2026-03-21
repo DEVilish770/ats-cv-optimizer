@@ -84,8 +84,11 @@ export async function POST(
       },
     });
 
-    // Transform diffData to match what the client expects
-    const nameCounts: Record<string, number> = {};
+    // Transform diffData for the client
+    // Use experience titles from optimized CV data for labeling
+    const experienceTitles = optimizationResult.optimizedData?.experience || [];
+    let experienceIndex = 0;
+
     const diff = (optimizationResult.diffData || []).map(
       (d: {
         section: string;
@@ -93,29 +96,29 @@ export async function POST(
         optimized: string;
         changes: string[];
       }) => {
-        // Deduplicate names: "experience" → "experience", "experience (2)", etc.
-        const base = d.section;
-        nameCounts[base] = (nameCounts[base] || 0) + 1;
-        const name =
-          nameCounts[base] === 1 ? base : `${base} (${nameCounts[base]})`;
+        let name = d.section;
+        let subtitle: string | undefined;
 
-        // Build changes from actual text, not change descriptions
-        const changes: Array<{
-          type: "added" | "removed" | "unchanged";
-          value: string;
-        }> = [];
-        if (d.original) {
-          changes.push({ type: "removed", value: d.original });
-        }
-        if (d.optimized) {
-          changes.push({ type: "added", value: d.optimized });
+        // For experience sections, use the actual job title + company
+        if (d.section.toLowerCase() === "experience") {
+          const exp = experienceTitles[experienceIndex];
+          if (exp) {
+            name = exp.title || "Role";
+            subtitle = exp.company || undefined;
+          }
+          experienceIndex++;
+        } else {
+          // Capitalize section name
+          name = d.section.charAt(0).toUpperCase() + d.section.slice(1);
         }
 
         return {
           name,
-          original: d.original || "(no content)",
-          optimized: d.optimized,
-          changes,
+          subtitle,
+          section: d.section,
+          original: d.original || "",
+          optimized: d.optimized || "",
+          changeDescriptions: d.changes || [],
         };
       }
     );

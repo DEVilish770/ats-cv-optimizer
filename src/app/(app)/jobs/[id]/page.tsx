@@ -86,7 +86,7 @@ export default function JobDetailPage() {
 
   if (showOptimize) {
     return (
-      <div className="mx-auto max-w-lg px-4 py-6">
+      <div className="mx-auto max-w-2xl px-4 py-6">
         <button
           onClick={() => setShowOptimize(false)}
           className="mb-4 flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700"
