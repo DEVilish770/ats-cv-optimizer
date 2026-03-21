@@ -16,7 +16,6 @@ export async function GET(
     });
 
     if (!job) {
-      // Fallback: try looking up by externalId
       job = await prisma.job.findFirst({
         where: { externalId: id },
       });
@@ -28,19 +27,22 @@ export async function GET(
 
     // Analyze requirements if not already done
     if (!job.requirements) {
-      const requirements = await analyzeJobRequirements(job.description);
-
-      const updatedJob = await prisma.job.update({
-        where: { id },
-        data: {
-          requirements: JSON.parse(JSON.stringify(requirements)),
-        },
-      });
-
-      return Response.json(updatedJob);
+      try {
+        const requirements = await analyzeJobRequirements(job.description);
+        job = await prisma.job.update({
+          where: { id: job.id },
+          data: {
+            requirements: JSON.parse(JSON.stringify(requirements)),
+          },
+        });
+      } catch (err) {
+        console.error("Failed to analyze requirements:", err);
+        // Continue without requirements — don't block the response
+      }
     }
 
-    return Response.json(job);
+    // Wrap in { job: ... } to match what the client expects
+    return Response.json({ job });
   } catch (error) {
     console.error("Job detail error:", error);
     return Response.json(
