@@ -1,14 +1,14 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { parseCV } from "./claude";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+function getClient() {
+  return new Anthropic();
+}
 
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
   // Use Claude's native PDF reading — no server-side PDF library needed
   const base64 = buffer.toString("base64");
-  const response = await anthropic.messages.create({
+  const response = await getClient().messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 4096,
     messages: [
@@ -36,7 +36,7 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
 }
 
 export async function extractTextFromImage(base64Image: string): Promise<string> {
-  const response = await anthropic.messages.create({
+  const response = await getClient().messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 4096,
     messages: [

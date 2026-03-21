@@ -1,16 +1,16 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { CVStructured, JobRequirements, OptimizationResult, SectionDiff } from "@/types";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+function getClient() {
+  return new Anthropic();
+}
 
 export async function parseCV(rawText: string): Promise<{
   structured: CVStructured;
   targetRole: string;
   targetSkills: string[];
 }> {
-  const response = await anthropic.messages.create({
+  const response = await getClient().messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 4096,
     messages: [
@@ -50,7 +50,7 @@ Return ONLY valid JSON, no markdown formatting.`,
 export async function analyzeJobRequirements(
   jobDescription: string
 ): Promise<JobRequirements> {
-  const response = await anthropic.messages.create({
+  const response = await getClient().messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 2048,
     messages: [
@@ -86,7 +86,7 @@ export async function optimizeCV(
   jobRequirements: JobRequirements,
   jobDescription: string
 ): Promise<OptimizationResult> {
-  const response = await anthropic.messages.create({
+  const response = await getClient().messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 8192,
     messages: [
