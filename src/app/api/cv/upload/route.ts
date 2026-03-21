@@ -43,7 +43,38 @@ export async function POST(request: Request) {
       },
     });
 
-    return Response.json(cv, { status: 201 });
+    // Map structured data to the format the client expects
+    const s = structured as unknown as Record<string, unknown>;
+    const experience = (s.experience as Array<Record<string, unknown>>) || [];
+    const education = (s.education as Array<Record<string, unknown>>) || [];
+
+    return Response.json(
+      {
+        cv: {
+          id: cv.id,
+          targetRole: cv.targetRole,
+          sections: {
+            contactInfo: s.contact || {},
+            summary: s.summary || "",
+            experience: experience.map((exp) => ({
+              title: exp.title || "",
+              company: exp.company || "",
+              period: `${exp.startDate || ""} - ${exp.endDate || "Present"}`,
+              description: Array.isArray(exp.bullets)
+                ? (exp.bullets as string[]).join(". ")
+                : exp.description || "",
+            })),
+            education: education.map((edu) => ({
+              degree: edu.degree || "",
+              institution: edu.institution || "",
+              year: edu.graduationDate || edu.year || "",
+            })),
+            skills: (s.skills as string[]) || [],
+          },
+        },
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("CV upload error:", error);
     const message =
