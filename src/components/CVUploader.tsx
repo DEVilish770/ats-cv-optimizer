@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, Image as ImageIcon, FileText, Loader2 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import CameraCapture from "@/components/CameraCapture";
 import { apiFetch } from "@/lib/session";
 
