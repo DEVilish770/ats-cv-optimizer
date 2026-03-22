@@ -26,17 +26,14 @@ function SectionDiffContent({ section }: { section: DiffSection }) {
   const isNewContent = !section.original;
 
   return (
-    <div className="space-y-3">
-      {/* ATS improvement explanation */}
+    <div className="space-y-2">
+      {/* ATS improvement explanation — compact */}
       {section.changeDescriptions.length > 0 && (
-        <div className="rounded-lg border border-blue-500/10 bg-blue-500/5 p-3">
-          <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-blue-400">
-            ATS Improvements Made
-          </p>
-          <ul className="space-y-1 text-sm text-[#9a9ab0]">
+        <div className="rounded-lg bg-blue-500/5 px-3 py-2">
+          <ul className="space-y-0.5 text-xs text-[#8a8aa0]">
             {section.changeDescriptions.map((desc, i) => (
               <li key={i} className="flex gap-2">
-                <span className="mt-1.5 block h-1.5 w-1.5 shrink-0 rounded-full bg-blue-400/60" />
+                <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-blue-400/50" />
                 <span>{desc}</span>
               </li>
             ))}
@@ -44,31 +41,31 @@ function SectionDiffContent({ section }: { section: DiffSection }) {
         </div>
       )}
 
-      {/* Before / After comparison */}
+      {/* Before / After — compact */}
       {isNewContent ? (
-        <div className="rounded-lg border border-emerald-500/10 bg-emerald-500/5 p-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-400">
-            Added to your CV
+        <div className="rounded-lg bg-emerald-500/5 px-3 py-2">
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-500/60">
+            Added
           </p>
-          <p className="whitespace-pre-line text-sm leading-relaxed text-[#c8c8d4]">
+          <p className="whitespace-pre-line text-xs leading-relaxed text-[#b0b0c0]">
             {section.optimized}
           </p>
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-4">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#4a4a5e]">
-              Your original
+        <div className="grid gap-2 sm:grid-cols-2">
+          <div className="rounded-lg bg-white/[0.02] px-3 py-2">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-[#3a3a4a]">
+              Before
             </p>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-[#7a7a92]">
+            <p className="whitespace-pre-line text-xs leading-relaxed text-[#6a6a80]">
               {section.original}
             </p>
           </div>
-          <div className="rounded-lg border border-emerald-500/10 bg-emerald-500/5 p-4">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-400">
-              ATS-optimized version
+          <div className="rounded-lg bg-emerald-500/5 px-3 py-2">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-500/60">
+              After
             </p>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-[#c8c8d4]">
+            <p className="whitespace-pre-line text-xs leading-relaxed text-[#b0b0c0]">
               {section.optimized}
             </p>
           </div>
@@ -107,7 +104,7 @@ export default function CVDiff({ sections }: CVDiffProps) {
   const otherSections = sections.filter((s) => s.section !== "experience");
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {/* Non-experience sections */}
       {otherSections.map((section) => {
         const globalIndex = sections.indexOf(section);
@@ -115,39 +112,39 @@ export default function CVDiff({ sections }: CVDiffProps) {
         const isNewContent = !section.original;
 
         return (
-          <div key={globalIndex} className="gradient-border overflow-hidden rounded-xl bg-[#101118]">
+          <div key={globalIndex} className="card-border overflow-hidden bg-[#0a0a0a]">
             <button
               onClick={() => toggleSection(globalIndex)}
-              className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-white/[0.02]"
+              className="flex w-full items-center justify-between p-3 text-left transition-colors hover:bg-white/[0.02]"
             >
               <div className="flex items-center gap-2">
                 {isNewContent ? (
-                  <Plus className="h-4 w-4 text-emerald-400" />
+                  <Plus className="h-3.5 w-3.5 text-emerald-400" />
                 ) : (
-                  <RefreshCw className="h-4 w-4 text-blue-400" />
+                  <RefreshCw className="h-3.5 w-3.5 text-blue-400" />
                 )}
-                <span className="font-semibold text-white">
+                <span className="text-sm font-semibold text-white">
                   {section.name}
                 </span>
                 <span
-                  className={`rounded-full px-2 py-0.5 text-xs ${
+                  className={`rounded-full px-2 py-0.5 text-[10px] ${
                     isNewContent
                       ? "bg-emerald-500/10 text-emerald-400"
                       : "bg-blue-500/10 text-blue-400"
                   }`}
                 >
-                  {isNewContent ? "New section added" : "Optimized for ATS"}
+                  {isNewContent ? "New" : "Optimized"}
                 </span>
               </div>
               {isExpanded ? (
-                <ChevronUp className="h-4 w-4 shrink-0 text-[#4a4a5e]" />
+                <ChevronUp className="h-4 w-4 shrink-0 text-[#3a3a4a]" />
               ) : (
-                <ChevronDown className="h-4 w-4 shrink-0 text-[#4a4a5e]" />
+                <ChevronDown className="h-4 w-4 shrink-0 text-[#3a3a4a]" />
               )}
             </button>
 
             {isExpanded && (
-              <div className="border-t border-white/[0.04] px-4 pb-4 pt-3">
+              <div className="border-t border-white/[0.04] px-3 pb-3 pt-2">
                 <SectionDiffContent section={section} />
               </div>
             )}
@@ -157,15 +154,14 @@ export default function CVDiff({ sections }: CVDiffProps) {
 
       {/* Experience sections — grouped */}
       {experienceSections.length > 0 && (
-        <div className="gradient-border overflow-hidden rounded-xl bg-[#101118]">
-          <div className="flex items-center gap-2 border-b border-white/[0.04] bg-white/[0.02] p-4">
-            <Briefcase className="h-4 w-4 text-[#c9a55c]" />
-            <span className="font-semibold text-white">
+        <div className="card-border overflow-hidden bg-[#0a0a0a]">
+          <div className="flex items-center gap-2 border-b border-white/[0.04] p-3">
+            <Briefcase className="h-3.5 w-3.5 text-[#c9a55c]" />
+            <span className="text-sm font-semibold text-white">
               Work Experience
             </span>
-            <span className="rounded-full bg-[#c9a55c]/10 px-2 py-0.5 text-xs text-[#c9a55c]">
-              {experienceSections.length}{" "}
-              {experienceSections.length === 1 ? "role" : "roles"} optimized
+            <span className="rounded-full bg-[#c9a55c]/10 px-2 py-0.5 text-[10px] text-[#c9a55c]">
+              {experienceSections.length} {experienceSections.length === 1 ? "role" : "roles"}
             </span>
           </div>
 
@@ -178,27 +174,27 @@ export default function CVDiff({ sections }: CVDiffProps) {
                 <div key={globalIndex}>
                   <button
                     onClick={() => toggleSection(globalIndex)}
-                    className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-white/[0.02]"
+                    className="flex w-full items-center justify-between px-3 py-2.5 text-left transition-colors hover:bg-white/[0.02]"
                   >
                     <div>
-                      <p className="font-medium text-white">
+                      <p className="text-sm font-medium text-white">
                         {section.name}
                       </p>
                       {section.subtitle && (
-                        <p className="text-sm text-[#5a5a70]">
+                        <p className="text-xs text-[#5a5a70]">
                           {section.subtitle}
                         </p>
                       )}
                     </div>
                     {isExpanded ? (
-                      <ChevronUp className="h-4 w-4 shrink-0 text-[#4a4a5e]" />
+                      <ChevronUp className="h-4 w-4 shrink-0 text-[#3a3a4a]" />
                     ) : (
-                      <ChevronDown className="h-4 w-4 shrink-0 text-[#4a4a5e]" />
+                      <ChevronDown className="h-4 w-4 shrink-0 text-[#3a3a4a]" />
                     )}
                   </button>
 
                   {isExpanded && (
-                    <div className="border-t border-white/[0.04] px-4 pb-4 pt-3">
+                    <div className="border-t border-white/[0.04] px-3 pb-3 pt-2">
                       <SectionDiffContent section={section} />
                     </div>
                   )}

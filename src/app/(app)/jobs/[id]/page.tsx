@@ -4,15 +4,15 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import FadeIn from "@/components/FadeIn";
 import OptimizeFlow from "@/components/OptimizeFlow";
+import GeometricLoader from "@/components/GeometricLoader";
 import {
   MapPin,
   Calendar,
   Building2,
   DollarSign,
-  Loader2,
   ArrowLeft,
-  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import { apiFetch } from "@/lib/session";
@@ -64,8 +64,8 @@ export default function JobDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-[#c9a55c]" />
+      <div className="flex flex-col items-center justify-center py-20">
+        <GeometricLoader />
       </div>
     );
   }
@@ -126,117 +126,128 @@ export default function JobDetailPage() {
       </Link>
 
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="font-[family-name:var(--font-heading)] text-2xl font-semibold text-white">
-          {job.title}
-        </h1>
-        <div className="mt-3 space-y-2 text-sm text-[#7a7a92]">
-          <p className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-[#5a5a70]" />
-            {job.company}
-          </p>
-          <p className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-[#5a5a70]" />
-            {job.location}
-          </p>
-          {salary && (
+      <FadeIn>
+        <div className="mb-6">
+          <h1 className="text-2xl font-semibold text-white">
+            {job.title}
+          </h1>
+          <div className="mt-3 space-y-2 text-sm text-[#7a7a92]">
             <p className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-emerald-500/60" />
-              <span className="text-emerald-400">{salary}</span>
+              <Building2 className="h-4 w-4 text-[#5a5a70]" />
+              {job.company}
             </p>
-          )}
-          <p className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-[#5a5a70]" />
-            Posted {new Date(job.postedAt).toLocaleDateString()}
-          </p>
+            <p className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-[#5a5a70]" />
+              {job.location}
+            </p>
+            {salary && (
+              <p className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-emerald-500/60" />
+                <span className="text-emerald-400">{salary}</span>
+              </p>
+            )}
+            <p className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-[#5a5a70]" />
+              Posted {new Date(job.postedAt).toLocaleDateString()}
+            </p>
+          </div>
+          <div className="mt-3">
+            <Badge
+              variant="outline"
+              className="border-white/[0.06] bg-white/[0.03] text-[#7a7a92]"
+            >
+              {job.source}
+            </Badge>
+          </div>
         </div>
-        <div className="mt-3">
-          <Badge
-            variant="outline"
-            className="border-white/[0.06] bg-white/[0.03] text-[#7a7a92]"
-          >
-            {job.source}
-          </Badge>
-        </div>
-      </div>
+      </FadeIn>
 
       {/* Analysis */}
       {job.analysis && (
         <div className="mb-6 space-y-3">
           {job.analysis.requiredSkills.length > 0 && (
-            <div className="gradient-border rounded-xl bg-[#101118] p-4">
-              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#c9a55c]">
-                Required Skills
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {job.analysis.requiredSkills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="rounded-full border border-white/[0.06] bg-white/[0.04] px-3 py-1 text-xs text-[#c8c8d4]"
-                  >
-                    {skill}
-                  </span>
-                ))}
+            <FadeIn delay={100}>
+              <div className="card-border bg-[#0a0a0a] p-4">
+                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#c9a55c]">
+                  Required Skills
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {job.analysis.requiredSkills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="rounded-full border border-white/[0.06] bg-white/[0.04] px-3 py-1 text-xs text-[#c8c8d4]"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            </FadeIn>
           )}
 
           {job.analysis.preferredSkills.length > 0 && (
-            <div className="gradient-border rounded-xl bg-[#101118] p-4">
-              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-blue-400">
-                Preferred Skills
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {job.analysis.preferredSkills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="rounded-full border border-blue-500/10 bg-blue-500/8 px-3 py-1 text-xs text-blue-300"
-                  >
-                    {skill}
-                  </span>
-                ))}
+            <FadeIn delay={200}>
+              <div className="card-border bg-[#0a0a0a] p-4">
+                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-blue-400">
+                  Preferred Skills
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {job.analysis.preferredSkills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="rounded-full border border-blue-500/10 bg-blue-500/8 px-3 py-1 text-xs text-blue-300"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            </FadeIn>
           )}
 
           {job.analysis.atsKeywords.length > 0 && (
-            <div className="gradient-border rounded-xl bg-[#101118] p-4">
-              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-amber-400">
-                ATS Keywords
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {job.analysis.atsKeywords.map((kw) => (
-                  <span
-                    key={kw}
-                    className="rounded-full border border-amber-500/10 bg-amber-500/8 px-3 py-1 text-xs text-amber-300"
-                  >
-                    {kw}
-                  </span>
-                ))}
+            <FadeIn delay={300}>
+              <div className="card-border bg-[#0a0a0a] p-4">
+                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-amber-400">
+                  ATS Keywords
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {job.analysis.atsKeywords.map((kw) => (
+                    <span
+                      key={kw}
+                      className="rounded-full border border-amber-500/10 bg-amber-500/8 px-3 py-1 text-xs text-amber-300"
+                    >
+                      {kw}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            </FadeIn>
           )}
         </div>
       )}
 
       {/* Description */}
-      <div className="gradient-border mb-6 rounded-xl bg-[#101118] p-5">
-        <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#5a5a70]">
-          Job Description
-        </h3>
-        <div className="whitespace-pre-line text-sm leading-relaxed text-[#9a9ab0]">
-          {job.description}
+      <FadeIn delay={400}>
+        <div className="card-border mb-6 bg-[#0a0a0a] p-5">
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#5a5a70]">
+            Job Description
+          </h3>
+          <div className="whitespace-pre-line text-sm leading-relaxed text-[#9a9ab0]">
+            {job.description}
+          </div>
         </div>
-      </div>
+      </FadeIn>
 
       {/* Actions */}
-      <Button
-        className="group h-12 w-full rounded-xl bg-[#c9a55c] text-base font-semibold text-[#0a0b10] transition-all hover:bg-[#d4b36a] hover:shadow-[0_0_30px_-5px_rgba(201,165,92,0.4)]"
-        onClick={() => setShowOptimize(true)}
-      >
-        <Sparkles className="mr-2 h-5 w-5" />
-        Optimize &amp; Apply
-      </Button>
+      <FadeIn delay={500}>
+        <Button
+          className="h-12 w-full rounded-xl bg-[#c9a55c] text-base font-semibold text-black transition-all hover:bg-[#d4b36a] hover:shadow-[0_0_30px_-5px_rgba(201,165,92,0.4)]"
+          onClick={() => setShowOptimize(true)}
+        >
+          Optimize &amp; Apply
+        </Button>
+      </FadeIn>
     </div>
   );
 }

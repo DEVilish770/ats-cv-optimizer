@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import FadeIn from "@/components/FadeIn";
+import GeometricLoader from "@/components/GeometricLoader";
 import { apiFetch } from "@/lib/session";
 
 interface Application {
@@ -65,8 +67,8 @@ export default function HistoryPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-[#c9a55c]" />
+      <div className="flex flex-col items-center justify-center py-20">
+        <GeometricLoader />
       </div>
     );
   }
@@ -89,7 +91,7 @@ export default function HistoryPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
       <div className="mb-6">
-        <h1 className="font-[family-name:var(--font-heading)] text-2xl font-semibold text-white">
+        <h1 className="text-2xl font-semibold text-white">
           Application History
         </h1>
         <p className="mt-2 text-sm text-[#7a7a92]">
@@ -108,38 +110,37 @@ export default function HistoryPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {applications.map((app) => {
+          {applications.map((app, i) => {
             const status = statusConfig[app.status];
             return (
-              <div
-                key={app.id}
-                className="gradient-border rounded-xl bg-[#101118] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-12px_rgba(201,165,92,0.08)]"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <h3 className="truncate font-semibold text-white">
-                      {app.jobTitle}
-                    </h3>
-                    <p className="text-sm text-[#7a7a92]">{app.company}</p>
+              <FadeIn key={app.id} delay={i * 60}>
+                <div className="card-border bg-[#0a0a0a] p-4 transition-all duration-300 hover:bg-[#0f0f0f]">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="truncate font-semibold text-white">
+                        {app.jobTitle}
+                      </h3>
+                      <p className="text-sm text-[#7a7a92]">{app.company}</p>
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className={`shrink-0 ${status.className}`}
+                    >
+                      {status.label}
+                    </Badge>
                   </div>
-                  <Badge
-                    variant="outline"
-                    className={`shrink-0 ${status.className}`}
-                  >
-                    {status.label}
-                  </Badge>
-                </div>
-                <div className="mt-3 flex items-center justify-between text-xs text-[#4a4a5e]">
-                  <span>
-                    {new Date(app.date).toLocaleDateString()}
-                  </span>
-                  {app.atsScore !== undefined && (
-                    <span className="font-medium text-[#c9a55c]">
-                      ATS: {app.atsScore}%
+                  <div className="mt-3 flex items-center justify-between text-xs text-[#4a4a5e]">
+                    <span>
+                      {new Date(app.date).toLocaleDateString()}
                     </span>
-                  )}
+                    {app.atsScore !== undefined && (
+                      <span className="font-medium text-[#c9a55c]">
+                        ATS: {app.atsScore}%
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </FadeIn>
             );
           })}
         </div>

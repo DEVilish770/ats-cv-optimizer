@@ -4,8 +4,10 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import JobCard from "@/components/JobCard";
+import FadeIn from "@/components/FadeIn";
 import { Button } from "@/components/ui/button";
-import { Loader2, Upload, Search } from "lucide-react";
+import { Upload, Search } from "lucide-react";
+import GeometricLoader from "@/components/GeometricLoader";
 import { apiFetch } from "@/lib/session";
 
 interface Job {
@@ -27,8 +29,8 @@ export default function JobsPage() {
     <Suspense
       fallback={
         <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 className="mb-4 h-8 w-8 animate-spin text-[#c9a55c]" />
-          <p className="text-lg font-medium text-white">Loading...</p>
+          <GeometricLoader />
+          <p className="mt-6 text-lg font-medium text-white">Loading...</p>
         </div>
       }
     >
@@ -83,11 +85,8 @@ function JobsContent() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <div className="relative mb-6">
-          <div className="absolute inset-0 rounded-full bg-[#c9a55c]/20 blur-xl animate-pulse" />
-          <Loader2 className="relative h-8 w-8 animate-spin text-[#c9a55c]" />
-        </div>
-        <p className="text-lg font-medium text-white">
+        <GeometricLoader size="lg" />
+        <p className="mt-6 text-lg font-medium text-white">
           Finding matching jobs...
         </p>
         <p className="mt-1 text-sm text-[#7a7a92]">
@@ -103,14 +102,14 @@ function JobsContent() {
         <div className="mb-4 rounded-full bg-white/[0.04] p-4">
           <Upload className="h-8 w-8 text-[#5a5a70]" />
         </div>
-        <h2 className="mb-2 font-[family-name:var(--font-heading)] text-lg font-semibold text-white">
+        <h2 className="mb-2 text-lg font-semibold text-white">
           No CV Found
         </h2>
         <p className="mb-6 text-center text-sm text-[#7a7a92]">
           Upload your CV first so we can find jobs that match your skills.
         </p>
         <Link href="/upload">
-          <Button className="bg-[#c9a55c] text-[#0a0b10] hover:bg-[#d4b36a]">
+          <Button className="bg-[#c9a55c] text-black hover:bg-[#d4b36a]">
             Upload Your CV
           </Button>
         </Link>
@@ -136,7 +135,7 @@ function JobsContent() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
       <div className="mb-6">
-        <h1 className="font-[family-name:var(--font-heading)] text-2xl font-semibold text-white">
+        <h1 className="text-2xl font-semibold text-white">
           Matching Jobs
         </h1>
         <p className="mt-2 text-sm text-[#7a7a92]">
@@ -160,8 +159,10 @@ function JobsContent() {
         </div>
       ) : (
         <div className="space-y-3">
-          {jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
+          {jobs.map((job, i) => (
+            <FadeIn key={job.id} delay={i * 60}>
+              <JobCard job={job} />
+            </FadeIn>
           ))}
         </div>
       )}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Calendar, ExternalLink } from "lucide-react";
+import { MapPin, Calendar } from "lucide-react";
 
 interface Job {
   id: string;
@@ -47,7 +47,7 @@ export default function JobCard({ job }: JobCardProps) {
 
   return (
     <Link href={`/jobs/${job.id}`}>
-      <div className="gradient-border group rounded-xl bg-[#101118] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-12px_rgba(201,165,92,0.1)]">
+      <div className="card-border group bg-[#0a0a0a] p-4 transition-all duration-300 hover:bg-[#0f0f0f]">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             <h3 className="truncate font-semibold text-white group-hover:text-[#c9a55c] transition-colors">
@@ -88,9 +88,8 @@ export default function JobCard({ job }: JobCardProps) {
           <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2.5 py-0.5 text-xs text-[#5a5a70]">
             {job.source}
           </span>
-          <span className="flex items-center gap-1 text-xs font-medium text-[#c9a55c] opacity-0 transition-opacity group-hover:opacity-100">
+          <span className="text-xs font-medium text-[#c9a55c] opacity-0 transition-opacity group-hover:opacity-100">
             View Details
-            <ExternalLink className="h-3 w-3" />
           </span>
         </div>
       </div>

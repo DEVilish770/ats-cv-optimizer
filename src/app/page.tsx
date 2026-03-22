@@ -31,7 +31,7 @@ const features = [
 
 export default function LandingPage() {
   return (
-    <div className="noise-bg flex flex-1 flex-col bg-[#08090d] overflow-hidden">
+    <div className="noise-bg flex flex-1 flex-col bg-black overflow-hidden">
       {/* Ambient orbs */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="animate-float absolute -left-32 top-1/4 h-64 w-64 rounded-full bg-[#c9a55c]/8 blur-[100px]" />
@@ -49,7 +49,7 @@ export default function LandingPage() {
             </span>
           </div>
 
-          <h1 className="mb-5 font-[family-name:var(--font-heading)] text-4xl font-semibold tracking-tight text-white sm:text-6xl">
+          <h1 className="mb-5 text-4xl font-semibold tracking-tight text-white sm:text-6xl">
             Land Your Dream Job
           </h1>
           <p className="mx-auto mb-10 max-w-md text-lg leading-relaxed text-[#7a7a92] sm:text-xl">
@@ -59,7 +59,7 @@ export default function LandingPage() {
           <Link href="/upload">
             <Button
               size="lg"
-              className="group h-13 rounded-full bg-[#c9a55c] px-8 text-base font-semibold text-[#0a0b10] transition-all hover:bg-[#d4b36a] hover:shadow-[0_0_30px_-5px_rgba(201,165,92,0.4)]"
+              className="group h-13 rounded-full bg-[#c9a55c] px-8 text-base font-semibold text-black transition-all hover:bg-[#d4b36a] hover:shadow-[0_0_30px_-5px_rgba(201,165,92,0.4)]"
             >
               Get Started
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -72,14 +72,14 @@ export default function LandingPage() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="gradient-border group cursor-default rounded-xl bg-[#101118] p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_40px_-12px_rgba(201,165,92,0.12)]"
+              className="card-border group cursor-default bg-[#0a0a0a] p-6 transition-all duration-300 hover:-translate-y-1"
             >
               <div
                 className={`mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br ${feature.gradient}`}
               >
                 <feature.icon className={`h-6 w-6 ${feature.iconColor}`} />
               </div>
-              <h3 className="mb-2 font-[family-name:var(--font-heading)] text-lg font-semibold text-white">
+              <h3 className="mb-2 text-lg font-semibold text-white">
                 {feature.title}
               </h3>
               <p className="text-sm leading-relaxed text-[#7a7a92]">

@@ -1,11 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Playfair_Display } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-});
 
 const playfair = Playfair_Display({
   variable: "--font-heading",
@@ -18,7 +13,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#08090d",
+  themeColor: "#000000",
 };
 
 export const metadata: Metadata = {
@@ -41,12 +36,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${playfair.variable} h-full antialiased`}
+      className={`${playfair.variable} h-full antialiased`}
     >
       <head>
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
-      <body className="min-h-full flex flex-col font-sans bg-[#08090d] text-[#e4e4ec]">
+      <body className="min-h-full flex flex-col font-[family-name:var(--font-heading)] bg-black text-[#e4e4ec]">
         {children}
       </body>
     </html>
