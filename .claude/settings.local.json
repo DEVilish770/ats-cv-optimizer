@@ -8,7 +8,13 @@
       "Bash(npm install:*)",
       "Bash(vercel login:*)",
       "Bash(vercel git:*)",
-      "Bash(grep -q '\"\"uuid\"\"' package.json)"
+      "Bash(grep -q '\"\"uuid\"\"' package.json)",
+      "Bash(curl -s \"https://elegant-faraday.vercel.app/api/jobs/cmn06o3910000i304dnow85mz\")",
+      "Bash(npx next:*)",
+      "Bash(npx vercel:*)",
+      "Bash(vercel inspect:*)",
+      "Bash(vercel logs:*)",
+      "Bash(node -e \"const { jsPDF } = require\\(''jspdf''\\); const doc = new jsPDF\\(\\); doc.text\\(''test'', 10, 10\\); console.log\\(''jsPDF works, output length:'', doc.output\\(''arraybuffer''\\).byteLength\\)\")"
     ]
   }
 }

@@ -3,7 +3,6 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, Image as ImageIcon, FileText, Loader2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import CameraCapture from "@/components/CameraCapture";
 import { apiFetch } from "@/lib/session";
 
@@ -34,10 +33,40 @@ interface CVUploaderProps {
 
 type UploadState = "idle" | "uploading" | "parsing" | "done" | "error";
 
+const uploadOptions = [
+  {
+    id: "camera",
+    icon: Camera,
+    title: "Camera",
+    description: "Take a photo of your printed CV",
+    gradient: "from-amber-500/20 to-orange-500/10",
+    iconColor: "text-amber-400",
+    borderGlow: "hover:shadow-[0_0_30px_-8px_rgba(245,158,11,0.15)]",
+  },
+  {
+    id: "photo",
+    icon: ImageIcon,
+    title: "Photo",
+    description: "Upload a photo or screenshot of your CV",
+    gradient: "from-emerald-500/20 to-teal-500/10",
+    iconColor: "text-emerald-400",
+    borderGlow: "hover:shadow-[0_0_30px_-8px_rgba(52,211,153,0.15)]",
+  },
+  {
+    id: "pdf",
+    icon: FileText,
+    title: "PDF",
+    description: "Upload your CV as a PDF document",
+    gradient: "from-blue-500/20 to-indigo-500/10",
+    iconColor: "text-blue-400",
+    borderGlow: "hover:shadow-[0_0_30px_-8px_rgba(74,125,255,0.15)]",
+  },
+];
+
 export default function CVUploader({ onUploadComplete }: CVUploaderProps) {
   const [state, setState] = useState<UploadState>("idle");
   const [progress, setProgress] = useState(0);
-  const [parsedCV, setParsedCV] = useState<ParsedCV | null>(null);
+  const [, setParsedCV] = useState<ParsedCV | null>(null);
   const [error, setError] = useState("");
   const [showCamera, setShowCamera] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -49,13 +78,11 @@ export default function CVUploader({ onUploadComplete }: CVUploaderProps) {
     setError("");
 
     try {
-      // Determine type from file or override
       const type = uploadType || (file.type === "application/pdf" ? "pdf" : "photo");
       const formData = new FormData();
       formData.append("file", file);
       formData.append("type", type);
 
-      // Simulate upload progress
       const progressInterval = setInterval(() => {
         setProgress((prev) => Math.min(prev + 10, 90));
       }, 200);
@@ -87,9 +114,7 @@ export default function CVUploader({ onUploadComplete }: CVUploaderProps) {
 
   function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (file) {
-      uploadFile(file);
-    }
+    if (file) uploadFile(file);
   }
 
   function handleCameraCapture(file: File) {
@@ -108,21 +133,24 @@ export default function CVUploader({ onUploadComplete }: CVUploaderProps) {
 
   if (state === "uploading" || state === "parsing") {
     return (
-      <div className="flex flex-col items-center justify-center py-16">
-        <Loader2 className="mb-4 h-10 w-10 animate-spin text-blue-600" />
-        <p className="text-lg font-medium text-slate-900">
-          {state === "uploading" ? "Uploading your CV..." : "Parsing your CV..."}
+      <div className="flex flex-col items-center justify-center py-20">
+        <div className="relative mb-6">
+          <div className="absolute inset-0 rounded-full bg-[#c9a55c]/20 blur-xl animate-pulse" />
+          <Loader2 className="relative h-10 w-10 animate-spin text-[#c9a55c]" />
+        </div>
+        <p className="text-lg font-medium text-white">
+          {state === "uploading" ? "Uploading your CV..." : "Analyzing your CV with AI..."}
         </p>
         {state === "uploading" && (
-          <div className="mt-4 h-2 w-48 overflow-hidden rounded-full bg-slate-200">
+          <div className="mt-4 h-1.5 w-48 overflow-hidden rounded-full bg-white/[0.06]">
             <div
-              className="h-full rounded-full bg-blue-600 transition-all duration-300"
+              className="h-full rounded-full bg-gradient-to-r from-[#c9a55c] to-[#d4b36a] transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
         )}
         {state === "parsing" && (
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-[#7a7a92]">
             Extracting skills, experience, and education...
           </p>
         )}
@@ -132,24 +160,25 @@ export default function CVUploader({ onUploadComplete }: CVUploaderProps) {
 
   if (state === "error") {
     return (
-      <div className="flex flex-col items-center justify-center py-16">
-        <div className="mb-4 rounded-full bg-red-100 p-3">
-          <FileText className="h-6 w-6 text-red-600" />
+      <div className="flex flex-col items-center justify-center py-20">
+        <div className="mb-4 rounded-full bg-red-500/10 p-3">
+          <FileText className="h-6 w-6 text-red-400" />
         </div>
-        <p className="mb-2 text-lg font-medium text-slate-900">Upload Failed</p>
-        <p className="mb-6 text-sm text-slate-500">{error}</p>
-        <Button onClick={() => setState("idle")} variant="outline">
+        <p className="mb-2 text-lg font-medium text-white">Upload Failed</p>
+        <p className="mb-6 text-sm text-[#7a7a92]">{error}</p>
+        <Button
+          onClick={() => setState("idle")}
+          variant="outline"
+          className="border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08]"
+        >
           Try Again
         </Button>
       </div>
     );
   }
 
-  // "done" state is handled by the parent via onUploadComplete redirect
-
-  // Idle state - show upload options
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <input
         ref={photoInputRef}
         type="file"
@@ -165,56 +194,29 @@ export default function CVUploader({ onUploadComplete }: CVUploaderProps) {
         onChange={handleFileSelect}
       />
 
-      <Card
-        className="cursor-pointer transition-shadow hover:shadow-md active:scale-[0.98]"
-        onClick={() => setShowCamera(true)}
-      >
-        <CardContent className="flex items-center gap-4 p-5">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-blue-100">
-            <Camera className="h-7 w-7 text-blue-600" />
+      {uploadOptions.map((opt) => (
+        <button
+          key={opt.id}
+          className={`gradient-border group w-full cursor-pointer rounded-xl bg-[#101118] p-5 text-left transition-all duration-300 hover:-translate-y-0.5 ${opt.borderGlow}`}
+          onClick={() => {
+            if (opt.id === "camera") setShowCamera(true);
+            else if (opt.id === "photo") photoInputRef.current?.click();
+            else pdfInputRef.current?.click();
+          }}
+        >
+          <div className="flex items-center gap-4">
+            <div
+              className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${opt.gradient}`}
+            >
+              <opt.icon className={`h-6 w-6 ${opt.iconColor}`} />
+            </div>
+            <div>
+              <h3 className="font-semibold text-white">{opt.title}</h3>
+              <p className="text-sm text-[#7a7a92]">{opt.description}</p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-slate-900">Camera</h3>
-            <p className="text-sm text-slate-500">
-              Take a photo of your printed CV
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card
-        className="cursor-pointer transition-shadow hover:shadow-md active:scale-[0.98]"
-        onClick={() => photoInputRef.current?.click()}
-      >
-        <CardContent className="flex items-center gap-4 p-5">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-green-100">
-            <ImageIcon className="h-7 w-7 text-green-600" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-slate-900">Photo</h3>
-            <p className="text-sm text-slate-500">
-              Upload a photo or screenshot of your CV
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card
-        className="cursor-pointer transition-shadow hover:shadow-md active:scale-[0.98]"
-        onClick={() => pdfInputRef.current?.click()}
-      >
-        <CardContent className="flex items-center gap-4 p-5">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-purple-100">
-            <FileText className="h-7 w-7 text-purple-600" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-slate-900">PDF</h3>
-            <p className="text-sm text-slate-500">
-              Upload your CV as a PDF document
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        </button>
+      ))}
     </div>
   );
 }

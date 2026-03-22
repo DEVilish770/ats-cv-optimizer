@@ -12,29 +12,33 @@ export default function ATSScore({ score, label = "ATS Score" }: ATSScoreProps) 
   const offset = circumference - (clampedScore / 100) * circumference;
 
   let color: string;
-  let bgColor: string;
+  let glowColor: string;
   if (clampedScore >= 70) {
-    color = "#16a34a"; // green-600
-    bgColor = "#dcfce7"; // green-100
+    color = "#34d399";
+    glowColor = "rgba(52, 211, 153, 0.3)";
   } else if (clampedScore >= 40) {
-    color = "#ca8a04"; // yellow-600
-    bgColor = "#fef9c3"; // yellow-100
+    color = "#fbbf24";
+    glowColor = "rgba(251, 191, 36, 0.3)";
   } else {
-    color = "#dc2626"; // red-600
-    bgColor = "#fee2e2"; // red-100
+    color = "#f87171";
+    glowColor = "rgba(248, 113, 113, 0.3)";
   }
 
   return (
     <div className="flex flex-col items-center">
       <div className="relative h-32 w-32">
-        <svg className="h-32 w-32 -rotate-90" viewBox="0 0 128 128">
+        <svg
+          className="h-32 w-32 -rotate-90"
+          viewBox="0 0 128 128"
+          style={{ filter: `drop-shadow(0 0 12px ${glowColor})` }}
+        >
           {/* Background circle */}
           <circle
             cx="64"
             cy="64"
             r={radius}
             fill="none"
-            stroke={bgColor}
+            stroke="rgba(255,255,255,0.04)"
             strokeWidth="10"
           />
           {/* Score arc */}
@@ -60,7 +64,7 @@ export default function ATSScore({ score, label = "ATS Score" }: ATSScoreProps) 
           </span>
         </div>
       </div>
-      <p className="mt-2 text-sm font-medium text-slate-600">{label}</p>
+      <p className="mt-2 text-sm font-medium text-[#7a7a92]">{label}</p>
     </div>
   );
 }

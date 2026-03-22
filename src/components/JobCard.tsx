@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, ExternalLink } from "lucide-react";
 
 interface Job {
@@ -38,67 +36,64 @@ function formatSalary(min?: number, max?: number, currency?: string) {
 }
 
 function scoreColor(score: number) {
-  if (score >= 80) return "bg-green-500";
-  if (score >= 60) return "bg-yellow-500";
-  return "bg-red-400";
+  if (score >= 80) return { bg: "bg-emerald-500/15", text: "text-emerald-400", dot: "bg-emerald-400" };
+  if (score >= 60) return { bg: "bg-amber-500/15", text: "text-amber-400", dot: "bg-amber-400" };
+  return { bg: "bg-red-500/15", text: "text-red-400", dot: "bg-red-400" };
 }
 
 export default function JobCard({ job }: JobCardProps) {
   const salary = formatSalary(job.salaryMin, job.salaryMax, job.salaryCurrency);
+  const colors = job.relevanceScore !== undefined ? scoreColor(job.relevanceScore) : null;
 
   return (
     <Link href={`/jobs/${job.id}`}>
-      <Card className="transition-shadow hover:shadow-md active:scale-[0.99]">
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <h3 className="truncate font-semibold text-slate-900">
-                {job.title}
-              </h3>
-              <p className="text-sm text-slate-600">{job.company}</p>
+      <div className="gradient-border group rounded-xl bg-[#101118] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-12px_rgba(201,165,92,0.1)]">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate font-semibold text-white group-hover:text-[#c9a55c] transition-colors">
+              {job.title}
+            </h3>
+            <p className="text-sm text-[#7a7a92]">{job.company}</p>
+          </div>
+          {colors && job.relevanceScore !== undefined && (
+            <div className={`flex shrink-0 items-center gap-1.5 rounded-full ${colors.bg} px-2.5 py-1`}>
+              <div className={`h-1.5 w-1.5 rounded-full ${colors.dot}`} />
+              <span className={`text-xs font-medium ${colors.text}`}>
+                {job.relevanceScore}%
+              </span>
             </div>
-            {job.relevanceScore !== undefined && (
-              <div className="flex shrink-0 items-center gap-1.5">
-                <div
-                  className={`h-2.5 w-2.5 rounded-full ${scoreColor(job.relevanceScore)}`}
-                />
-                <span className="text-xs font-medium text-slate-500">
-                  {job.relevanceScore}%
-                </span>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
-            <span className="flex items-center gap-1">
-              <MapPin className="h-3.5 w-3.5" />
-              {job.location}
-            </span>
-            <span className="flex items-center gap-1">
-              <Calendar className="h-3.5 w-3.5" />
-              {new Date(job.postedAt).toLocaleDateString()}
-            </span>
-          </div>
-
-          {salary && (
-            <p className="mt-2 text-sm font-medium text-green-700">{salary}</p>
           )}
+        </div>
 
-          <p className="mt-2 line-clamp-2 text-sm text-slate-500">
-            {job.description}
-          </p>
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-[#5a5a70]">
+          <span className="flex items-center gap-1">
+            <MapPin className="h-3.5 w-3.5" />
+            {job.location}
+          </span>
+          <span className="flex items-center gap-1">
+            <Calendar className="h-3.5 w-3.5" />
+            {new Date(job.postedAt).toLocaleDateString()}
+          </span>
+        </div>
 
-          <div className="mt-3 flex items-center justify-between">
-            <Badge variant="secondary" className="text-xs">
-              {job.source}
-            </Badge>
-            <span className="flex items-center gap-1 text-xs font-medium text-blue-600">
-              View Details
-              <ExternalLink className="h-3 w-3" />
-            </span>
-          </div>
-        </CardContent>
-      </Card>
+        {salary && (
+          <p className="mt-2 text-sm font-medium text-emerald-400">{salary}</p>
+        )}
+
+        <p className="mt-2 line-clamp-2 text-sm text-[#5a5a70]">
+          {job.description}
+        </p>
+
+        <div className="mt-3 flex items-center justify-between">
+          <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2.5 py-0.5 text-xs text-[#5a5a70]">
+            {job.source}
+          </span>
+          <span className="flex items-center gap-1 text-xs font-medium text-[#c9a55c] opacity-0 transition-opacity group-hover:opacity-100">
+            View Details
+            <ExternalLink className="h-3 w-3" />
+          </span>
+        </div>
+      </div>
     </Link>
   );
 }

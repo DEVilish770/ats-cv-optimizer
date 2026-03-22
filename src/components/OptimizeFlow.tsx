@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import ATSScore from "@/components/ATSScore";
 import CVDiff from "@/components/CVDiff";
@@ -104,16 +103,20 @@ export default function OptimizeFlow({ jobId }: OptimizeFlowProps) {
   if (currentStep === "error") {
     return (
       <div className="flex flex-col items-center py-12">
-        <div className="mb-4 rounded-full bg-red-100 p-3">
-          <AlertTriangle className="h-6 w-6 text-red-600" />
+        <div className="mb-4 rounded-full bg-red-500/10 p-3">
+          <AlertTriangle className="h-6 w-6 text-red-400" />
         </div>
-        <p className="mb-2 text-lg font-semibold text-slate-900">
+        <p className="mb-2 text-lg font-semibold text-white">
           Optimization Failed
         </p>
-        <p className="mb-6 max-w-sm text-center text-sm text-slate-500">
+        <p className="mb-6 max-w-sm text-center text-sm text-[#7a7a92]">
           {error}
         </p>
-        <Button variant="outline" onClick={() => window.location.reload()}>
+        <Button
+          variant="outline"
+          onClick={() => window.location.reload()}
+          className="border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08]"
+        >
           Try Again
         </Button>
       </div>
@@ -123,12 +126,15 @@ export default function OptimizeFlow({ jobId }: OptimizeFlowProps) {
   if (currentStep !== "done") {
     return (
       <div className="py-12">
-        <div className="mb-6 text-center">
-          <Sparkles className="mx-auto mb-3 h-8 w-8 text-blue-600" />
-          <h2 className="text-lg font-semibold text-slate-900">
+        <div className="mb-8 text-center">
+          <div className="relative mx-auto mb-4 h-10 w-10">
+            <div className="absolute inset-0 rounded-full bg-[#c9a55c]/20 blur-xl animate-pulse" />
+            <Sparkles className="relative h-10 w-10 text-[#c9a55c]" />
+          </div>
+          <h2 className="font-[family-name:var(--font-heading)] text-xl font-semibold text-white">
             Optimizing Your CV
           </h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-[#7a7a92]">
             This usually takes 15-30 seconds
           </p>
         </div>
@@ -142,30 +148,35 @@ export default function OptimizeFlow({ jobId }: OptimizeFlowProps) {
             const isActive = step.key === currentStep;
 
             return (
-              <div key={step.key} className="flex gap-3">
+              <div
+                key={step.key}
+                className={`flex gap-3 rounded-lg p-3 transition-colors ${
+                  isActive ? "bg-[#c9a55c]/5" : ""
+                }`}
+              >
                 <div className="mt-0.5">
                   {isDone ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5 text-emerald-400" />
                   ) : isActive ? (
-                    <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+                    <Loader2 className="h-5 w-5 animate-spin text-[#c9a55c]" />
                   ) : (
-                    <Circle className="h-5 w-5 text-slate-300" />
+                    <Circle className="h-5 w-5 text-[#2a2a3a]" />
                   )}
                 </div>
                 <div>
                   <p
                     className={`text-sm font-medium ${
                       isDone
-                        ? "text-green-700"
+                        ? "text-emerald-400"
                         : isActive
-                          ? "text-blue-700"
-                          : "text-slate-400"
+                          ? "text-[#c9a55c]"
+                          : "text-[#3a3a4a]"
                     }`}
                   >
                     {step.label}
                   </p>
                   {isActive && (
-                    <p className="mt-0.5 text-xs text-slate-500">
+                    <p className="mt-0.5 text-xs text-[#5a5a70]">
                       {step.description}
                     </p>
                   )}
@@ -193,34 +204,37 @@ export default function OptimizeFlow({ jobId }: OptimizeFlowProps) {
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
-        <CheckCircle className="mx-auto mb-2 h-8 w-8 text-green-500" />
-        <h2 className="text-xl font-bold text-slate-900">
+        <div className="relative mx-auto mb-3 h-8 w-8">
+          <div className="absolute inset-0 rounded-full bg-emerald-400/20 blur-lg" />
+          <CheckCircle className="relative h-8 w-8 text-emerald-400" />
+        </div>
+        <h2 className="font-[family-name:var(--font-heading)] text-xl font-semibold text-white">
           CV Optimization Complete
         </h2>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-[#7a7a92]">
           Your CV has been tailored to match this job&apos;s requirements
         </p>
       </div>
 
-      {/* ATS Score + Actions side by side on desktop */}
+      {/* ATS Score + Actions */}
       <div className="grid gap-4 sm:grid-cols-2">
         {/* ATS Score */}
-        <Card>
-          <CardContent className="flex flex-col items-center py-6">
+        <div className="gradient-border glow-gold rounded-xl bg-[#101118] p-6">
+          <div className="flex flex-col items-center">
             <ATSScore score={result.atsScore} />
-            <p className="mt-2 text-sm font-medium text-slate-600">
+            <p className="mt-2 text-sm font-medium text-white">
               {scoreLabel}
             </p>
-            <p className="mt-1 max-w-[200px] text-center text-xs text-slate-400">
+            <p className="mt-1 max-w-[220px] text-center text-xs text-[#5a5a70]">
               How well your optimized CV matches this job&apos;s ATS filters
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Quick Actions */}
-        <Card>
-          <CardContent className="flex flex-col justify-center gap-3 py-6">
-            <p className="mb-1 text-sm font-semibold text-slate-700">
+        <div className="gradient-border rounded-xl bg-[#101118] p-6">
+          <div className="flex h-full flex-col justify-center gap-3">
+            <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#c9a55c]">
               Ready to apply?
             </p>
             {result.applyUrl && (
@@ -229,7 +243,7 @@ export default function OptimizeFlow({ jobId }: OptimizeFlowProps) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button className="h-11 w-full bg-blue-600 text-sm font-semibold hover:bg-blue-500">
+                <Button className="h-11 w-full bg-[#c9a55c] text-sm font-semibold text-[#0a0b10] hover:bg-[#d4b36a] hover:shadow-[0_0_20px_-5px_rgba(201,165,92,0.3)]">
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Apply on Job Site
                 </Button>
@@ -237,85 +251,84 @@ export default function OptimizeFlow({ jobId }: OptimizeFlowProps) {
             )}
             {result.pdfUrl && (
               <a href={result.pdfUrl} download>
-                <Button variant="outline" className="h-11 w-full text-sm">
+                <Button
+                  variant="outline"
+                  className="h-11 w-full border-white/10 bg-white/[0.04] text-sm text-white hover:bg-white/[0.08]"
+                >
                   <Download className="mr-2 h-4 w-4" />
-                  Download Optimized CV (PDF)
+                  Download Optimized CV
                 </Button>
               </a>
             )}
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[#4a4a5e]">
               Download the PDF and upload it when applying
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Keywords */}
       <div>
         <div className="mb-3 flex items-center gap-2">
-          <Target className="h-4 w-4 text-slate-600" />
-          <h3 className="text-sm font-semibold text-slate-700">
+          <Target className="h-4 w-4 text-[#c9a55c]" />
+          <h3 className="text-sm font-semibold text-white">
             Keyword Analysis
           </h3>
         </div>
-        <p className="mb-3 text-xs text-slate-500">
+        <p className="mb-3 text-xs text-[#5a5a70]">
           ATS systems scan for specific keywords from the job posting. Here is
           how your optimized CV matches.
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Card>
-            <CardContent className="p-4">
-              <div className="mb-2 flex items-center justify-between">
-                <h4 className="text-sm font-semibold text-green-700">
-                  Matched Keywords
-                </h4>
-                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                  {result.matchedKeywords.length}
-                </span>
-              </div>
-              <p className="mb-2 text-xs text-slate-400">
-                These keywords from the job posting are in your CV
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {result.matchedKeywords.map((kw) => (
-                  <Badge
-                    key={kw}
-                    variant="secondary"
-                    className="bg-green-50 text-green-700"
-                  >
-                    {kw}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="gradient-border rounded-xl bg-[#101118] p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
+                Matched Keywords
+              </h4>
+              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-400">
+                {result.matchedKeywords.length}
+              </span>
+            </div>
+            <p className="mb-3 text-xs text-[#4a4a5e]">
+              These keywords from the job posting are in your CV
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {result.matchedKeywords.map((kw) => (
+                <Badge
+                  key={kw}
+                  variant="secondary"
+                  className="border-emerald-500/10 bg-emerald-500/8 text-emerald-300"
+                >
+                  {kw}
+                </Badge>
+              ))}
+            </div>
+          </div>
 
-          <Card>
-            <CardContent className="p-4">
-              <div className="mb-2 flex items-center justify-between">
-                <h4 className="text-sm font-semibold text-amber-700">
-                  Missing Keywords
-                </h4>
-                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
-                  {result.missingKeywords.length}
-                </span>
-              </div>
-              <p className="mb-2 text-xs text-slate-400">
-                Could not be added without fabricating experience
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {result.missingKeywords.map((kw) => (
-                  <Badge
-                    key={kw}
-                    variant="secondary"
-                    className="bg-amber-50 text-amber-700"
-                  >
-                    {kw}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="gradient-border rounded-xl bg-[#101118] p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-400">
+                Missing Keywords
+              </h4>
+              <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-400">
+                {result.missingKeywords.length}
+              </span>
+            </div>
+            <p className="mb-3 text-xs text-[#4a4a5e]">
+              Could not be added without fabricating experience
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {result.missingKeywords.map((kw) => (
+                <Badge
+                  key={kw}
+                  variant="secondary"
+                  className="border-amber-500/10 bg-amber-500/8 text-amber-300"
+                >
+                  {kw}
+                </Badge>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -323,12 +336,12 @@ export default function OptimizeFlow({ jobId }: OptimizeFlowProps) {
       {result.diff.length > 0 && (
         <div>
           <div className="mb-3 flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-slate-600" />
-            <h3 className="text-sm font-semibold text-slate-700">
+            <Sparkles className="h-4 w-4 text-[#c9a55c]" />
+            <h3 className="text-sm font-semibold text-white">
               What We Changed
             </h3>
           </div>
-          <p className="mb-3 text-xs text-slate-500">
+          <p className="mb-3 text-xs text-[#5a5a70]">
             Click each section to see how your CV was optimized. No experience
             or qualifications were fabricated.
           </p>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,23 +21,23 @@ const statusConfig: Record<
 > = {
   optimized: {
     label: "Optimized",
-    className: "bg-blue-50 text-blue-700 border-blue-200",
+    className: "border-blue-500/20 bg-blue-500/10 text-blue-400",
   },
   applied: {
     label: "Applied",
-    className: "bg-yellow-50 text-yellow-700 border-yellow-200",
+    className: "border-amber-500/20 bg-amber-500/10 text-amber-400",
   },
   interviewing: {
     label: "Interviewing",
-    className: "bg-purple-50 text-purple-700 border-purple-200",
+    className: "border-purple-500/20 bg-purple-500/10 text-purple-400",
   },
   offered: {
     label: "Offered",
-    className: "bg-green-50 text-green-700 border-green-200",
+    className: "border-emerald-500/20 bg-emerald-500/10 text-emerald-400",
   },
   rejected: {
     label: "Rejected",
-    className: "bg-red-50 text-red-700 border-red-200",
+    className: "border-red-500/20 bg-red-500/10 text-red-400",
   },
 };
 
@@ -67,7 +66,7 @@ export default function HistoryPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#c9a55c]" />
       </div>
     );
   }
@@ -75,8 +74,12 @@ export default function HistoryPage() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center px-4 py-20">
-        <p className="mb-4 text-sm text-red-600">{error}</p>
-        <Button variant="outline" onClick={() => window.location.reload()}>
+        <p className="mb-4 text-sm text-red-400">{error}</p>
+        <Button
+          variant="outline"
+          onClick={() => window.location.reload()}
+          className="border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08]"
+        >
           Retry
         </Button>
       </div>
@@ -84,22 +87,22 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-6">
+    <div className="mx-auto max-w-2xl px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">
+        <h1 className="font-[family-name:var(--font-heading)] text-2xl font-semibold text-white">
           Application History
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-[#7a7a92]">
           Track your job applications
         </p>
       </div>
 
       {applications.length === 0 ? (
         <div className="flex flex-col items-center py-12">
-          <div className="mb-4 rounded-full bg-slate-100 p-4">
-            <Clock className="h-8 w-8 text-slate-400" />
+          <div className="mb-4 rounded-full bg-white/[0.04] p-4">
+            <Clock className="h-8 w-8 text-[#3a3a4a]" />
           </div>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-[#5a5a70]">
             No applications yet. Start by optimizing your CV for a job.
           </p>
         </div>
@@ -108,37 +111,35 @@ export default function HistoryPage() {
           {applications.map((app) => {
             const status = statusConfig[app.status];
             return (
-              <Card
+              <div
                 key={app.id}
-                className="cursor-pointer transition-shadow hover:shadow-md active:scale-[0.99]"
+                className="gradient-border rounded-xl bg-[#101118] p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_-12px_rgba(201,165,92,0.08)]"
               >
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <h3 className="truncate font-semibold text-slate-900">
-                        {app.jobTitle}
-                      </h3>
-                      <p className="text-sm text-slate-600">{app.company}</p>
-                    </div>
-                    <Badge
-                      variant="outline"
-                      className={`shrink-0 ${status.className}`}
-                    >
-                      {status.label}
-                    </Badge>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate font-semibold text-white">
+                      {app.jobTitle}
+                    </h3>
+                    <p className="text-sm text-[#7a7a92]">{app.company}</p>
                   </div>
-                  <div className="mt-2 flex items-center justify-between text-xs text-slate-400">
-                    <span>
-                      {new Date(app.date).toLocaleDateString()}
+                  <Badge
+                    variant="outline"
+                    className={`shrink-0 ${status.className}`}
+                  >
+                    {status.label}
+                  </Badge>
+                </div>
+                <div className="mt-3 flex items-center justify-between text-xs text-[#4a4a5e]">
+                  <span>
+                    {new Date(app.date).toLocaleDateString()}
+                  </span>
+                  {app.atsScore !== undefined && (
+                    <span className="font-medium text-[#c9a55c]">
+                      ATS: {app.atsScore}%
                     </span>
-                    {app.atsScore !== undefined && (
-                      <span className="font-medium text-slate-500">
-                        ATS: {app.atsScore}%
-                      </span>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                  )}
+                </div>
+              </div>
             );
           })}
         </div>

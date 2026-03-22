@@ -27,8 +27,8 @@ export default function JobsPage() {
     <Suspense
       fallback={
         <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 className="mb-4 h-8 w-8 animate-spin text-blue-600" />
-          <p className="text-lg font-medium text-slate-900">Loading...</p>
+          <Loader2 className="mb-4 h-8 w-8 animate-spin text-[#c9a55c]" />
+          <p className="text-lg font-medium text-white">Loading...</p>
         </div>
       }
     >
@@ -83,11 +83,14 @@ function JobsContent() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <Loader2 className="mb-4 h-8 w-8 animate-spin text-blue-600" />
-        <p className="text-lg font-medium text-slate-900">
+        <div className="relative mb-6">
+          <div className="absolute inset-0 rounded-full bg-[#c9a55c]/20 blur-xl animate-pulse" />
+          <Loader2 className="relative h-8 w-8 animate-spin text-[#c9a55c]" />
+        </div>
+        <p className="text-lg font-medium text-white">
           Finding matching jobs...
         </p>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-[#7a7a92]">
           Searching across multiple job boards
         </p>
       </div>
@@ -97,17 +100,17 @@ function JobsContent() {
   if (noCv) {
     return (
       <div className="flex flex-col items-center justify-center px-4 py-20">
-        <div className="mb-4 rounded-full bg-slate-100 p-4">
-          <Upload className="h-8 w-8 text-slate-400" />
+        <div className="mb-4 rounded-full bg-white/[0.04] p-4">
+          <Upload className="h-8 w-8 text-[#5a5a70]" />
         </div>
-        <h2 className="mb-2 text-lg font-semibold text-slate-900">
+        <h2 className="mb-2 font-[family-name:var(--font-heading)] text-lg font-semibold text-white">
           No CV Found
         </h2>
-        <p className="mb-6 text-center text-sm text-slate-500">
+        <p className="mb-6 text-center text-sm text-[#7a7a92]">
           Upload your CV first so we can find jobs that match your skills.
         </p>
         <Link href="/upload">
-          <Button className="bg-blue-600 hover:bg-blue-500">
+          <Button className="bg-[#c9a55c] text-[#0a0b10] hover:bg-[#d4b36a]">
             Upload Your CV
           </Button>
         </Link>
@@ -118,8 +121,12 @@ function JobsContent() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center px-4 py-20">
-        <p className="mb-4 text-sm text-red-600">{error}</p>
-        <Button variant="outline" onClick={() => window.location.reload()}>
+        <p className="mb-4 text-sm text-red-400">{error}</p>
+        <Button
+          variant="outline"
+          onClick={() => window.location.reload()}
+          className="border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08]"
+        >
           Retry
         </Button>
       </div>
@@ -127,14 +134,16 @@ function JobsContent() {
   }
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-6">
+    <div className="mx-auto max-w-2xl px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Matching Jobs</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="font-[family-name:var(--font-heading)] text-2xl font-semibold text-white">
+          Matching Jobs
+        </h1>
+        <p className="mt-2 text-sm text-[#7a7a92]">
           {jobs.length > 0 ? (
             <>
               <Search className="mr-1 inline h-3.5 w-3.5" />
-              Found {jobs.length} matching {jobs.length === 1 ? "job" : "jobs"}
+              Found {jobs.length} matching {jobs.length === 1 ? "job" : "jobs"} for your profile
             </>
           ) : (
             "No matching jobs found"
@@ -144,7 +153,7 @@ function JobsContent() {
 
       {jobs.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-slate-500">
+          <p className="text-[#5a5a70]">
             No jobs found matching your profile. Try updating your CV or check
             back later.
           </p>

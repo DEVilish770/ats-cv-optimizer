@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import OptimizeFlow from "@/components/OptimizeFlow";
 import {
@@ -66,7 +65,7 @@ export default function JobDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#c9a55c]" />
       </div>
     );
   }
@@ -74,11 +73,14 @@ export default function JobDetailPage() {
   if (error || !job) {
     return (
       <div className="flex flex-col items-center justify-center px-4 py-20">
-        <p className="mb-4 text-sm text-red-600">
-          {error || "Job not found"}
-        </p>
+        <p className="mb-4 text-sm text-red-400">{error || "Job not found"}</p>
         <Link href="/jobs">
-          <Button variant="outline">Back to Jobs</Button>
+          <Button
+            variant="outline"
+            className="border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08]"
+          >
+            Back to Jobs
+          </Button>
         </Link>
       </div>
     );
@@ -86,10 +88,10 @@ export default function JobDetailPage() {
 
   if (showOptimize) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-6">
+      <div className="mx-auto max-w-3xl px-4 py-6">
         <button
           onClick={() => setShowOptimize(false)}
-          className="mb-4 flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700"
+          className="mb-4 flex items-center gap-1 text-sm text-[#5a5a70] hover:text-[#c9a55c] transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to job
@@ -114,10 +116,10 @@ export default function JobDetailPage() {
       : null;
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-6">
+    <div className="mx-auto max-w-2xl px-4 py-6">
       <Link
         href="/jobs"
-        className="mb-4 flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700"
+        className="mb-6 flex items-center gap-1 text-sm text-[#5a5a70] hover:text-[#c9a55c] transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to jobs
@@ -125,110 +127,111 @@ export default function JobDetailPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">{job.title}</h1>
-        <div className="mt-2 space-y-1.5 text-sm text-slate-600">
+        <h1 className="font-[family-name:var(--font-heading)] text-2xl font-semibold text-white">
+          {job.title}
+        </h1>
+        <div className="mt-3 space-y-2 text-sm text-[#7a7a92]">
           <p className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-slate-400" />
+            <Building2 className="h-4 w-4 text-[#5a5a70]" />
             {job.company}
           </p>
           <p className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-slate-400" />
+            <MapPin className="h-4 w-4 text-[#5a5a70]" />
             {job.location}
           </p>
           {salary && (
             <p className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-slate-400" />
-              {salary}
+              <DollarSign className="h-4 w-4 text-emerald-500/60" />
+              <span className="text-emerald-400">{salary}</span>
             </p>
           )}
           <p className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-slate-400" />
+            <Calendar className="h-4 w-4 text-[#5a5a70]" />
             Posted {new Date(job.postedAt).toLocaleDateString()}
           </p>
         </div>
         <div className="mt-3">
-          <Badge variant="secondary">{job.source}</Badge>
+          <Badge
+            variant="outline"
+            className="border-white/[0.06] bg-white/[0.03] text-[#7a7a92]"
+          >
+            {job.source}
+          </Badge>
         </div>
       </div>
 
       {/* Analysis */}
       {job.analysis && (
-        <div className="mb-6 space-y-4">
+        <div className="mb-6 space-y-3">
           {job.analysis.requiredSkills.length > 0 && (
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="mb-2 text-sm font-semibold text-slate-700">
-                  Required Skills
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {job.analysis.requiredSkills.map((skill) => (
-                    <Badge key={skill} variant="secondary">
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <div className="gradient-border rounded-xl bg-[#101118] p-4">
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#c9a55c]">
+                Required Skills
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {job.analysis.requiredSkills.map((skill) => (
+                  <span
+                    key={skill}
+                    className="rounded-full border border-white/[0.06] bg-white/[0.04] px-3 py-1 text-xs text-[#c8c8d4]"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
 
           {job.analysis.preferredSkills.length > 0 && (
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="mb-2 text-sm font-semibold text-slate-700">
-                  Preferred Skills
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {job.analysis.preferredSkills.map((skill) => (
-                    <Badge
-                      key={skill}
-                      variant="outline"
-                      className="border-blue-200 text-blue-700"
-                    >
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <div className="gradient-border rounded-xl bg-[#101118] p-4">
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-blue-400">
+                Preferred Skills
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {job.analysis.preferredSkills.map((skill) => (
+                  <span
+                    key={skill}
+                    className="rounded-full border border-blue-500/10 bg-blue-500/8 px-3 py-1 text-xs text-blue-300"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
 
           {job.analysis.atsKeywords.length > 0 && (
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="mb-2 text-sm font-semibold text-slate-700">
-                  ATS Keywords
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {job.analysis.atsKeywords.map((kw) => (
-                    <span
-                      key={kw}
-                      className="rounded bg-yellow-50 px-2 py-0.5 text-xs font-medium text-yellow-800"
-                    >
-                      {kw}
-                    </span>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <div className="gradient-border rounded-xl bg-[#101118] p-4">
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-amber-400">
+                ATS Keywords
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {job.analysis.atsKeywords.map((kw) => (
+                  <span
+                    key={kw}
+                    className="rounded-full border border-amber-500/10 bg-amber-500/8 px-3 py-1 text-xs text-amber-300"
+                  >
+                    {kw}
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       )}
 
       {/* Description */}
-      <Card className="mb-6">
-        <CardContent className="p-4">
-          <h3 className="mb-2 text-sm font-semibold text-slate-700">
-            Job Description
-          </h3>
-          <div className="prose prose-sm prose-slate max-w-none whitespace-pre-line text-sm leading-relaxed text-slate-600">
-            {job.description}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="gradient-border mb-6 rounded-xl bg-[#101118] p-5">
+        <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#5a5a70]">
+          Job Description
+        </h3>
+        <div className="whitespace-pre-line text-sm leading-relaxed text-[#9a9ab0]">
+          {job.description}
+        </div>
+      </div>
 
       {/* Actions */}
       <Button
-        className="h-12 w-full bg-blue-600 text-base font-semibold hover:bg-blue-500"
+        className="group h-12 w-full rounded-xl bg-[#c9a55c] text-base font-semibold text-[#0a0b10] transition-all hover:bg-[#d4b36a] hover:shadow-[0_0_30px_-5px_rgba(201,165,92,0.4)]"
         onClick={() => setShowOptimize(true)}
       >
         <Sparkles className="mr-2 h-5 w-5" />

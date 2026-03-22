@@ -14,7 +14,7 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.06] bg-[#0c0d12]/90 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-lg items-center justify-around px-2">
         {navItems.map((item) => {
           const isActive =
@@ -23,14 +23,14 @@ export default function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 rounded-lg px-3 py-1 text-xs font-medium transition-colors ${
+              className={`flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 rounded-lg px-3 py-1 text-xs font-medium transition-all ${
                 isActive
-                  ? "text-blue-600"
-                  : "text-slate-400 hover:text-slate-600"
+                  ? "text-[#c9a55c]"
+                  : "text-[#4a4a5e] hover:text-[#7a7a92]"
               }`}
             >
               <item.icon
-                className={`h-5 w-5 ${isActive ? "text-blue-600" : ""}`}
+                className={`h-5 w-5 transition-all ${isActive ? "text-[#c9a55c] drop-shadow-[0_0_8px_rgba(201,165,92,0.4)]" : ""}`}
                 strokeWidth={isActive ? 2.5 : 2}
               />
               <span>{item.label}</span>
@@ -38,7 +38,6 @@ export default function BottomNav() {
           );
         })}
       </div>
-      {/* Safe area spacer for iOS */}
       <div className="h-[env(safe-area-inset-bottom)]" />
     </nav>
   );
