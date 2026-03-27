@@ -40,24 +40,18 @@ const uploadOptions = [
     icon: Camera,
     title: "Camera",
     description: "Take a photo of your printed CV",
-    iconColor: "text-amber-400",
-    iconBg: "bg-amber-500/10",
   },
   {
     id: "photo",
     icon: ImageIcon,
     title: "Photo",
     description: "Upload a photo or screenshot of your CV",
-    iconColor: "text-emerald-400",
-    iconBg: "bg-emerald-500/10",
   },
   {
     id: "pdf",
     icon: FileText,
     title: "PDF",
     description: "Upload your CV as a PDF document",
-    iconColor: "text-blue-400",
-    iconBg: "bg-blue-500/10",
   },
 ];
 
@@ -123,14 +117,14 @@ export default function CVUploader({ onUploadComplete }: CVUploaderProps) {
   if (state === "uploading" || state === "parsing") {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <GeometricLoader size="lg" />
-        <p className="mt-6 text-lg font-medium text-white">
+        <GeometricLoader size="lg" showTips />
+        <p className="mt-6 text-lg font-medium text-foreground">
           {state === "uploading" ? "Uploading your CV..." : "Analyzing your CV with AI..."}
         </p>
-        <p className="mt-2 text-sm text-[#5a5a70]">
+        <p className="mt-2 text-sm text-muted-foreground">
           {state === "uploading"
             ? "Sending your document securely"
-            : "Extracting skills, experience, and education..."}
+            : "Extracting skills, experience, and education"}
         </p>
       </div>
     );
@@ -139,13 +133,9 @@ export default function CVUploader({ onUploadComplete }: CVUploaderProps) {
   if (state === "error") {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <p className="mb-2 text-lg font-medium text-white">Upload Failed</p>
-        <p className="mb-6 text-sm text-[#7a7a92]">{error}</p>
-        <Button
-          onClick={() => setState("idle")}
-          variant="outline"
-          className="border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08]"
-        >
+        <p className="mb-2 text-lg font-medium text-foreground">Upload Failed</p>
+        <p className="mb-6 text-sm text-muted-foreground">{error}</p>
+        <Button onClick={() => setState("idle")} variant="outline">
           Try Again
         </Button>
       </div>
@@ -172,23 +162,19 @@ export default function CVUploader({ onUploadComplete }: CVUploaderProps) {
       {uploadOptions.map((opt) => (
         <button
           key={opt.id}
-          className="card-border group w-full cursor-pointer bg-[#0a0a0a] p-5 text-left transition-all duration-300 hover:bg-[#0f0f0f]"
+          className="card-border group flex w-full items-center gap-4 bg-card p-5 text-left transition-all duration-200 hover:shadow-md"
           onClick={() => {
             if (opt.id === "camera") setShowCamera(true);
             else if (opt.id === "photo") photoInputRef.current?.click();
             else pdfInputRef.current?.click();
           }}
         >
-          <div className="flex items-center gap-4">
-            <div
-              className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${opt.iconBg}`}
-            >
-              <opt.icon className={`h-6 w-6 ${opt.iconColor}`} />
-            </div>
-            <div>
-              <h3 className="font-semibold text-white">{opt.title}</h3>
-              <p className="text-sm text-[#7a7a92]">{opt.description}</p>
-            </div>
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary">
+            <opt.icon className="h-5 w-5 text-foreground" strokeWidth={1.5} />
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground">{opt.title}</h3>
+            <p className="text-sm text-muted-foreground">{opt.description}</p>
           </div>
         </button>
       ))}

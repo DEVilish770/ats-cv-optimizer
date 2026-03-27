@@ -6,7 +6,6 @@ import Link from "next/link";
 import JobCard from "@/components/JobCard";
 import FadeIn from "@/components/FadeIn";
 import { Button } from "@/components/ui/button";
-import { Upload, Search } from "lucide-react";
 import GeometricLoader from "@/components/GeometricLoader";
 import { apiFetch } from "@/lib/session";
 
@@ -29,8 +28,8 @@ export default function JobsPage() {
     <Suspense
       fallback={
         <div className="flex flex-col items-center justify-center py-20">
-          <GeometricLoader />
-          <p className="mt-6 text-lg font-medium text-white">Loading...</p>
+          <GeometricLoader showTips />
+          <p className="mt-6 text-lg font-medium text-foreground">Loading...</p>
         </div>
       }
     >
@@ -85,11 +84,11 @@ function JobsContent() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <GeometricLoader size="lg" />
-        <p className="mt-6 text-lg font-medium text-white">
+        <GeometricLoader size="lg" showTips />
+        <p className="mt-6 text-lg font-medium text-foreground">
           Finding matching jobs...
         </p>
-        <p className="mt-1 text-sm text-[#7a7a92]">
+        <p className="mt-1 text-sm text-muted-foreground">
           Searching across multiple job boards
         </p>
       </div>
@@ -98,18 +97,15 @@ function JobsContent() {
 
   if (noCv) {
     return (
-      <div className="flex flex-col items-center justify-center px-4 py-20">
-        <div className="mb-4 rounded-full bg-white/[0.04] p-4">
-          <Upload className="h-8 w-8 text-[#5a5a70]" />
-        </div>
-        <h2 className="mb-2 text-lg font-semibold text-white">
+      <div className="flex flex-col items-center justify-center px-5 py-20">
+        <h2 className="mb-2 text-lg font-semibold text-foreground">
           No CV Found
         </h2>
-        <p className="mb-6 text-center text-sm text-[#7a7a92]">
+        <p className="mb-6 text-center text-sm text-muted-foreground">
           Upload your CV first so we can find jobs that match your skills.
         </p>
         <Link href="/upload">
-          <Button className="bg-[#c9a55c] text-black hover:bg-[#d4b36a]">
+          <Button className="bg-foreground text-background hover:opacity-90">
             Upload Your CV
           </Button>
         </Link>
@@ -119,13 +115,9 @@ function JobsContent() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center px-4 py-20">
-        <p className="mb-4 text-sm text-red-400">{error}</p>
-        <Button
-          variant="outline"
-          onClick={() => window.location.reload()}
-          className="border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08]"
-        >
+      <div className="flex flex-col items-center justify-center px-5 py-20">
+        <p className="mb-4 text-sm text-destructive">{error}</p>
+        <Button variant="outline" onClick={() => window.location.reload()}>
           Retry
         </Button>
       </div>
@@ -133,26 +125,21 @@ function JobsContent() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
+    <div className="mx-auto max-w-2xl px-5 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-white">
+        <h1 className="text-2xl font-semibold text-foreground">
           Matching Jobs
         </h1>
-        <p className="mt-2 text-sm text-[#7a7a92]">
-          {jobs.length > 0 ? (
-            <>
-              <Search className="mr-1 inline h-3.5 w-3.5" />
-              Found {jobs.length} matching {jobs.length === 1 ? "job" : "jobs"} for your profile
-            </>
-          ) : (
-            "No matching jobs found"
-          )}
+        <p className="mt-2 text-sm text-muted-foreground">
+          {jobs.length > 0
+            ? `Found ${jobs.length} matching ${jobs.length === 1 ? "job" : "jobs"} for your profile`
+            : "No matching jobs found"}
         </p>
       </div>
 
       {jobs.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-[#5a5a70]">
+          <p className="text-muted-foreground">
             No jobs found matching your profile. Try updating your CV or check
             back later.
           </p>

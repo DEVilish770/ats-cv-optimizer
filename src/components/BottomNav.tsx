@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Upload, Briefcase, Clock } from "lucide-react";
+import { Upload, Briefcase, Clock, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/components/ThemeProvider";
 
 const navItems = [
   { href: "/upload", label: "Upload", icon: Upload },
@@ -12,9 +13,10 @@ const navItems = [
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const { theme, toggle } = useTheme();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.06] bg-black/90 backdrop-blur-xl">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/90 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-lg items-center justify-around px-2">
         {navItems.map((item) => {
           const isActive =
@@ -25,18 +27,30 @@ export default function BottomNav() {
               href={item.href}
               className={`flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 rounded-lg px-3 py-1 text-xs font-medium transition-all ${
                 isActive
-                  ? "text-[#c9a55c]"
-                  : "text-[#4a4a5e] hover:text-[#7a7a92]"
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <item.icon
-                className={`h-5 w-5 transition-all ${isActive ? "text-[#c9a55c]" : ""}`}
-                strokeWidth={isActive ? 2.5 : 2}
+                className="h-5 w-5 transition-all"
+                strokeWidth={isActive ? 2.5 : 1.8}
               />
               <span>{item.label}</span>
             </Link>
           );
         })}
+        <button
+          onClick={toggle}
+          className="flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-0.5 rounded-lg px-3 py-1 text-xs font-medium text-muted-foreground transition-all hover:text-foreground"
+          aria-label="Toggle theme"
+        >
+          {theme === "light" ? (
+            <Moon className="h-5 w-5" strokeWidth={1.8} />
+          ) : (
+            <Sun className="h-5 w-5" strokeWidth={1.8} />
+          )}
+          <span>Theme</span>
+        </button>
       </div>
       <div className="h-[env(safe-area-inset-bottom)]" />
     </nav>

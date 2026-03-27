@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
+import ThemeProvider from "@/components/ThemeProvider";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -19,7 +20,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#000000",
+  themeColor: "#FAFAFA",
 };
 
 export const metadata: Metadata = {
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     title: "ATS CV Optimizer",
   },
 };
@@ -46,9 +47,15 @@ export default function RootLayout({
     >
       <head>
         <link rel="apple-touch-icon" href="/icon-192.png" />
+        {/* Prevent flash of wrong theme */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('ats-theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}`,
+          }}
+        />
       </head>
-      <body className="min-h-full flex flex-col font-[family-name:var(--font-body)] bg-black text-[#e4e4ec]">
-        {children}
+      <body className="min-h-full flex flex-col font-[family-name:var(--font-body)] bg-background text-foreground">
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

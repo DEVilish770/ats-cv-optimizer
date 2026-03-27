@@ -7,9 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import FadeIn from "@/components/FadeIn";
 import OptimizeFlow from "@/components/OptimizeFlow";
 import GeometricLoader from "@/components/GeometricLoader";
-import {
-  ArrowLeft,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { apiFetch } from "@/lib/session";
 
@@ -68,15 +66,10 @@ export default function JobDetailPage() {
 
   if (error || !job) {
     return (
-      <div className="flex flex-col items-center justify-center px-4 py-20">
-        <p className="mb-4 text-sm text-red-400">{error || "Job not found"}</p>
+      <div className="flex flex-col items-center justify-center px-5 py-20">
+        <p className="mb-4 text-sm text-destructive">{error || "Job not found"}</p>
         <Link href="/jobs">
-          <Button
-            variant="outline"
-            className="border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08]"
-          >
-            Back to Jobs
-          </Button>
+          <Button variant="outline">Back to Jobs</Button>
         </Link>
       </div>
     );
@@ -84,10 +77,10 @@ export default function JobDetailPage() {
 
   if (showOptimize) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-6">
+      <div className="mx-auto max-w-3xl px-5 py-6">
         <button
           onClick={() => setShowOptimize(false)}
-          className="mb-4 flex items-center gap-1 text-sm text-[#5a5a70] hover:text-[#c9a55c] transition-colors"
+          className="mb-4 flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to job
@@ -112,10 +105,10 @@ export default function JobDetailPage() {
       : null;
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6">
+    <div className="mx-auto max-w-2xl px-5 py-6">
       <Link
         href="/jobs"
-        className="mb-6 flex items-center gap-1 text-sm text-[#5a5a70] hover:text-[#c9a55c] transition-colors"
+        className="mb-6 flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to jobs
@@ -124,24 +117,21 @@ export default function JobDetailPage() {
       {/* Header */}
       <FadeIn>
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-white">
+          <h1 className="text-2xl font-semibold text-foreground">
             {job.title}
           </h1>
-          <div className="mt-3 space-y-1.5 text-sm text-[#7a7a92]">
-            <p>{job.company}</p>
+          <div className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+            <p className="font-medium">{job.company}</p>
             <p>{job.location}</p>
             {salary && (
-              <p className="text-emerald-400">{salary}</p>
+              <p className="font-medium text-emerald-600 dark:text-emerald-400">{salary}</p>
             )}
-            <p className="text-xs text-[#5a5a70]">
+            <p className="text-xs">
               Posted {new Date(job.postedAt).toLocaleDateString()}
             </p>
           </div>
           <div className="mt-3">
-            <Badge
-              variant="outline"
-              className="border-white/[0.06] bg-white/[0.03] text-[#7a7a92]"
-            >
+            <Badge variant="outline">
               {job.source}
             </Badge>
           </div>
@@ -153,15 +143,15 @@ export default function JobDetailPage() {
         <div className="mb-6 space-y-3">
           {job.analysis.requiredSkills.length > 0 && (
             <FadeIn delay={100}>
-              <div className="card-border bg-[#0a0a0a] p-4">
-                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#c9a55c]">
+              <div className="card-border bg-card p-4">
+                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-foreground">
                   Required Skills
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {job.analysis.requiredSkills.map((skill) => (
                     <span
                       key={skill}
-                      className="rounded-full border border-white/[0.06] bg-white/[0.04] px-3 py-1 text-xs text-[#c8c8d4]"
+                      className="rounded-full border border-border bg-secondary px-3 py-1 text-xs text-foreground"
                     >
                       {skill}
                     </span>
@@ -173,15 +163,15 @@ export default function JobDetailPage() {
 
           {job.analysis.preferredSkills.length > 0 && (
             <FadeIn delay={200}>
-              <div className="card-border bg-[#0a0a0a] p-4">
-                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-blue-400">
+              <div className="card-border bg-card p-4">
+                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Preferred Skills
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {job.analysis.preferredSkills.map((skill) => (
                     <span
                       key={skill}
-                      className="rounded-full border border-blue-500/10 bg-blue-500/8 px-3 py-1 text-xs text-blue-300"
+                      className="rounded-full border border-border bg-secondary px-3 py-1 text-xs text-muted-foreground"
                     >
                       {skill}
                     </span>
@@ -193,15 +183,15 @@ export default function JobDetailPage() {
 
           {job.analysis.atsKeywords.length > 0 && (
             <FadeIn delay={300}>
-              <div className="card-border bg-[#0a0a0a] p-4">
-                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-amber-400">
+              <div className="card-border bg-card p-4">
+                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   ATS Keywords
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {job.analysis.atsKeywords.map((kw) => (
                     <span
                       key={kw}
-                      className="rounded-full border border-amber-500/10 bg-amber-500/8 px-3 py-1 text-xs text-amber-300"
+                      className="rounded-full border border-border bg-secondary px-3 py-1 text-xs text-muted-foreground"
                     >
                       {kw}
                     </span>
@@ -215,11 +205,11 @@ export default function JobDetailPage() {
 
       {/* Description */}
       <FadeIn delay={400}>
-        <div className="card-border mb-6 bg-[#0a0a0a] p-5">
-          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#5a5a70]">
+        <div className="card-border mb-6 bg-card p-5">
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Job Description
           </h3>
-          <div className="whitespace-pre-line text-sm leading-relaxed text-[#9a9ab0]">
+          <div className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
             {job.description}
           </div>
         </div>
@@ -228,7 +218,7 @@ export default function JobDetailPage() {
       {/* Actions */}
       <FadeIn delay={500}>
         <Button
-          className="h-12 w-full rounded-xl bg-[#c9a55c] text-base font-semibold text-black transition-all hover:bg-[#d4b36a] hover:shadow-[0_0_30px_-5px_rgba(201,165,92,0.4)]"
+          className="h-12 w-full rounded-xl bg-foreground text-base font-semibold text-background transition-all hover:opacity-90"
           onClick={() => setShowOptimize(true)}
         >
           Optimize &amp; Apply for This Role

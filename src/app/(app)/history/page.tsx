@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FadeIn from "@/components/FadeIn";
 import GeometricLoader from "@/components/GeometricLoader";
@@ -17,30 +16,12 @@ interface Application {
   atsScore?: number;
 }
 
-const statusConfig: Record<
-  Application["status"],
-  { label: string; className: string }
-> = {
-  optimized: {
-    label: "Optimized",
-    className: "border-blue-500/20 bg-blue-500/10 text-blue-400",
-  },
-  applied: {
-    label: "Applied",
-    className: "border-amber-500/20 bg-amber-500/10 text-amber-400",
-  },
-  interviewing: {
-    label: "Interviewing",
-    className: "border-purple-500/20 bg-purple-500/10 text-purple-400",
-  },
-  offered: {
-    label: "Offered",
-    className: "border-emerald-500/20 bg-emerald-500/10 text-emerald-400",
-  },
-  rejected: {
-    label: "Rejected",
-    className: "border-red-500/20 bg-red-500/10 text-red-400",
-  },
+const statusConfig: Record<Application["status"], { label: string; className: string }> = {
+  optimized: { label: "Optimized", className: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-400" },
+  applied: { label: "Applied", className: "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400" },
+  interviewing: { label: "Interviewing", className: "border-purple-200 bg-purple-50 text-purple-700 dark:border-purple-500/20 dark:bg-purple-500/10 dark:text-purple-400" },
+  offered: { label: "Offered", className: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400" },
+  rejected: { label: "Rejected", className: "border-red-200 bg-red-50 text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400" },
 };
 
 export default function HistoryPage() {
@@ -61,7 +42,6 @@ export default function HistoryPage() {
         setLoading(false);
       }
     }
-
     fetchHistory();
   }, []);
 
@@ -75,36 +55,23 @@ export default function HistoryPage() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center px-4 py-20">
-        <p className="mb-4 text-sm text-red-400">{error}</p>
-        <Button
-          variant="outline"
-          onClick={() => window.location.reload()}
-          className="border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08]"
-        >
-          Retry
-        </Button>
+      <div className="flex flex-col items-center justify-center px-5 py-20">
+        <p className="mb-4 text-sm text-destructive">{error}</p>
+        <Button variant="outline" onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
+    <div className="mx-auto max-w-2xl px-5 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-white">
-          Application History
-        </h1>
-        <p className="mt-2 text-sm text-[#7a7a92]">
-          Track your job applications
-        </p>
+        <h1 className="text-2xl font-semibold text-foreground">Application History</h1>
+        <p className="mt-2 text-sm text-muted-foreground">Track your job applications</p>
       </div>
 
       {applications.length === 0 ? (
         <div className="flex flex-col items-center py-12">
-          <div className="mb-4 rounded-full bg-white/[0.04] p-4">
-            <Clock className="h-8 w-8 text-[#3a3a4a]" />
-          </div>
-          <p className="text-sm text-[#5a5a70]">
+          <p className="text-sm text-muted-foreground">
             No applications yet. Start by optimizing your CV for a job.
           </p>
         </div>
@@ -114,29 +81,20 @@ export default function HistoryPage() {
             const status = statusConfig[app.status];
             return (
               <FadeIn key={app.id} delay={i * 60}>
-                <div className="card-border bg-[#0a0a0a] p-4 transition-all duration-300 hover:bg-[#0f0f0f]">
+                <div className="card-border bg-card p-4 transition-all duration-200 hover:shadow-md">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <h3 className="truncate font-semibold text-white">
-                        {app.jobTitle}
-                      </h3>
-                      <p className="text-sm text-[#7a7a92]">{app.company}</p>
+                      <h3 className="truncate font-semibold text-foreground">{app.jobTitle}</h3>
+                      <p className="text-sm text-muted-foreground">{app.company}</p>
                     </div>
-                    <Badge
-                      variant="outline"
-                      className={`shrink-0 ${status.className}`}
-                    >
+                    <Badge variant="outline" className={`shrink-0 ${status.className}`}>
                       {status.label}
                     </Badge>
                   </div>
-                  <div className="mt-3 flex items-center justify-between text-xs text-[#4a4a5e]">
-                    <span>
-                      {new Date(app.date).toLocaleDateString()}
-                    </span>
+                  <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{new Date(app.date).toLocaleDateString()}</span>
                     {app.atsScore !== undefined && (
-                      <span className="font-medium text-[#c9a55c]">
-                        ATS: {app.atsScore}%
-                      </span>
+                      <span className="font-medium text-foreground">ATS: {app.atsScore}%</span>
                     )}
                   </div>
                 </div>
