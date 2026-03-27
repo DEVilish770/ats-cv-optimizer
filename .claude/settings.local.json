@@ -14,7 +14,9 @@
       "Bash(npx vercel:*)",
       "Bash(vercel inspect:*)",
       "Bash(vercel logs:*)",
-      "Bash(node -e \"const { jsPDF } = require\\(''jspdf''\\); const doc = new jsPDF\\(\\); doc.text\\(''test'', 10, 10\\); console.log\\(''jsPDF works, output length:'', doc.output\\(''arraybuffer''\\).byteLength\\)\")"
+      "Bash(node -e \"const { jsPDF } = require\\(''jspdf''\\); const doc = new jsPDF\\(\\); doc.text\\(''test'', 10, 10\\); console.log\\(''jsPDF works, output length:'', doc.output\\(''arraybuffer''\\).byteLength\\)\")",
+      "Bash(grep -E \"\\\\.tsx$\")",
+      "Bash(npx prisma:*)"
     ]
   }
 }

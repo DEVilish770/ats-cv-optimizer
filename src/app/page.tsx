@@ -8,24 +8,24 @@ const features = [
     title: "Smart CV Scan",
     description:
       "Snap a photo, upload an image, or select a PDF. We extract and structure your CV instantly using AI.",
-    gradient: "from-amber-500/20 to-orange-500/10",
     iconColor: "text-amber-400",
+    iconBg: "bg-amber-500/10",
   },
   {
     icon: Search,
     title: "Auto Job Match",
     description:
       "We search thousands of listings across major job boards to find roles that match your profile.",
-    gradient: "from-blue-500/20 to-cyan-500/10",
     iconColor: "text-blue-400",
+    iconBg: "bg-blue-500/10",
   },
   {
     icon: FileCheck,
     title: "ATS Optimization",
     description:
       "Tailor your CV for each job with the right keywords to pass automated screening systems.",
-    gradient: "from-emerald-500/20 to-teal-500/10",
     iconColor: "text-emerald-400",
+    iconBg: "bg-emerald-500/10",
   },
 ];
 
@@ -75,7 +75,7 @@ export default function LandingPage() {
               className="card-border group cursor-default bg-[#0a0a0a] p-6 transition-all duration-300 hover:-translate-y-1"
             >
               <div
-                className={`mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br ${feature.gradient}`}
+                className={`mb-4 flex h-12 w-12 items-center justify-center rounded-lg ${feature.iconBg}`}
               >
                 <feature.icon className={`h-6 w-6 ${feature.iconColor}`} />
               </div>

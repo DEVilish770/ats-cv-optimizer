@@ -7,12 +7,7 @@ import ATSScore from "@/components/ATSScore";
 import CVDiff from "@/components/CVDiff";
 import FadeIn from "@/components/FadeIn";
 import GeometricLoader from "@/components/GeometricLoader";
-import {
-  CheckCircle,
-  Circle,
-  Target,
-  AlertTriangle,
-} from "lucide-react";
+import { CheckCircle, Circle, AlertTriangle } from "lucide-react";
 import { apiFetch } from "@/lib/session";
 
 interface DiffSection {
@@ -104,7 +99,7 @@ export default function OptimizeFlow({ jobId }: OptimizeFlowProps) {
         <div className="mb-4 rounded-full bg-red-500/10 p-3">
           <AlertTriangle className="h-6 w-6 text-red-400" />
         </div>
-        <p className="mb-2 text-lg font-semibold text-white">
+        <p className="mb-2 font-[family-name:var(--font-heading)] text-lg font-semibold text-white">
           Optimization Failed
         </p>
         <p className="mb-6 max-w-sm text-center text-sm text-[#7a7a92]">
@@ -209,119 +204,103 @@ export default function OptimizeFlow({ jobId }: OptimizeFlowProps) {
         </div>
       </FadeIn>
 
-      {/* ATS Score + Actions */}
+      {/* ATS Score + Actions — side by side */}
       <FadeIn delay={100}>
         <div className="grid gap-4 sm:grid-cols-2">
           {/* ATS Score */}
-          <div className="card-border bg-[#0a0a0a] p-6">
-            <div className="flex flex-col items-center">
-              <ATSScore score={result.atsScore} />
-              <p className="mt-1 text-sm font-medium text-white">
-                {scoreLabel}
-              </p>
-              <p className="mt-1 max-w-[220px] text-center text-xs text-[#4a4a5e]">
-                How well your optimized CV matches this job&apos;s ATS filters
-              </p>
-            </div>
+          <div className="card-border flex flex-col items-center justify-center bg-[#0a0a0a] p-5">
+            <ATSScore score={result.atsScore} />
+            <p className="mt-2 text-sm font-medium text-white">
+              {scoreLabel}
+            </p>
+            <p className="mt-0.5 max-w-[220px] text-center text-xs text-[#4a4a5e]">
+              How well your optimized CV matches this job&apos;s ATS filters
+            </p>
           </div>
 
-          {/* Quick Actions */}
-          <div className="card-border bg-[#0a0a0a] p-6">
-            <div className="flex h-full flex-col justify-center gap-3">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#c9a55c]">
-                Ready to apply?
-              </p>
-              {result.applyUrl && (
-                <a
-                  href={result.applyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+          {/* Actions */}
+          <div className="card-border flex flex-col justify-center gap-3 bg-[#0a0a0a] p-5">
+            <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#c9a55c]">
+              Ready to apply?
+            </p>
+            {result.applyUrl && (
+              <a
+                href={result.applyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button className="h-11 w-full bg-[#c9a55c] text-sm font-semibold text-black hover:bg-[#d4b36a]">
+                  Apply on Job Site
+                </Button>
+              </a>
+            )}
+            {result.pdfUrl && (
+              <a href={result.pdfUrl} download>
+                <Button
+                  variant="outline"
+                  className="h-11 w-full border-white/10 bg-white/[0.04] text-sm text-white hover:bg-white/[0.08]"
                 >
-                  <Button className="h-11 w-full bg-[#c9a55c] text-sm font-semibold text-black hover:bg-[#d4b36a]">
-                    Apply on Job Site
-                  </Button>
-                </a>
-              )}
-              {result.pdfUrl && (
-                <a href={result.pdfUrl} download>
-                  <Button
-                    variant="outline"
-                    className="h-11 w-full border-white/10 bg-white/[0.04] text-sm text-white hover:bg-white/[0.08]"
-                  >
-                    Download Optimized CV
-                  </Button>
-                </a>
-              )}
-              <p className="text-xs text-[#4a4a5e]">
-                Download the PDF and upload it when applying
-              </p>
-            </div>
+                  Download Optimized CV
+                </Button>
+              </a>
+            )}
+            <p className="text-xs text-[#4a4a5e]">
+              Download the PDF and upload it when applying
+            </p>
           </div>
         </div>
       </FadeIn>
 
-      {/* Keywords */}
+      {/* Keywords — compact horizontal layout */}
       <FadeIn delay={200}>
-        <div>
-          <div className="mb-3 flex items-center gap-2">
-            <Target className="h-4 w-4 text-[#c9a55c]" />
-            <h3 className="text-sm font-semibold text-white">
-              Keyword Analysis
-            </h3>
-          </div>
-          <p className="mb-3 text-xs text-[#5a5a70]">
-            ATS systems scan for specific keywords from the job posting. Here is
-            how your optimized CV matches.
-          </p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="card-border bg-[#0a0a0a] p-4">
-              <div className="mb-2 flex items-center justify-between">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
-                  Matched
-                </h4>
-                <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-400">
-                  {result.matchedKeywords.length}
-                </span>
-              </div>
-              <p className="mb-2 text-xs text-[#4a4a5e]">
-                Found in your CV
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {result.matchedKeywords.map((kw) => (
-                  <Badge
-                    key={kw}
-                    variant="secondary"
-                    className="border-emerald-500/10 bg-emerald-500/8 text-emerald-300 text-xs"
-                  >
-                    {kw}
-                  </Badge>
-                ))}
-              </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="card-border bg-[#0a0a0a] p-4">
+            <div className="mb-2 flex items-center justify-between">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
+                Keywords Matched
+              </h4>
+              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-400">
+                {result.matchedKeywords.length}
+              </span>
             </div>
+            <p className="mb-2 text-xs text-[#4a4a5e]">
+              Found in your optimized CV
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {result.matchedKeywords.map((kw) => (
+                <Badge
+                  key={kw}
+                  variant="secondary"
+                  className="border-emerald-500/10 bg-emerald-500/8 text-xs text-emerald-300"
+                >
+                  {kw}
+                </Badge>
+              ))}
+            </div>
+          </div>
 
-            <div className="card-border bg-[#0a0a0a] p-4">
-              <div className="mb-2 flex items-center justify-between">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-400">
-                  Missing
-                </h4>
-                <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-400">
-                  {result.missingKeywords.length}
-                </span>
-              </div>
-              <p className="mb-2 text-xs text-[#4a4a5e]">
-                Cannot add without fabricating
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {result.missingKeywords.map((kw) => (
-                  <Badge
-                    key={kw}
-                    variant="secondary"
-                    className="border-amber-500/10 bg-amber-500/8 text-amber-300 text-xs"
-                  >
-                    {kw}
-                  </Badge>
-                ))}
-              </div>
+          <div className="card-border bg-[#0a0a0a] p-4">
+            <div className="mb-2 flex items-center justify-between">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-400">
+                Not Applicable
+              </h4>
+              <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-400">
+                {result.missingKeywords.length}
+              </span>
+            </div>
+            <p className="mb-2 text-xs text-[#4a4a5e]">
+              Cannot add without fabricating experience
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {result.missingKeywords.map((kw) => (
+                <Badge
+                  key={kw}
+                  variant="secondary"
+                  className="border-amber-500/10 bg-amber-500/8 text-xs text-amber-300"
+                >
+                  {kw}
+                </Badge>
+              ))}
             </div>
           </div>
         </div>

@@ -8,10 +8,6 @@ import FadeIn from "@/components/FadeIn";
 import OptimizeFlow from "@/components/OptimizeFlow";
 import GeometricLoader from "@/components/GeometricLoader";
 import {
-  MapPin,
-  Calendar,
-  Building2,
-  DollarSign,
   ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
@@ -131,23 +127,13 @@ export default function JobDetailPage() {
           <h1 className="text-2xl font-semibold text-white">
             {job.title}
           </h1>
-          <div className="mt-3 space-y-2 text-sm text-[#7a7a92]">
-            <p className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-[#5a5a70]" />
-              {job.company}
-            </p>
-            <p className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-[#5a5a70]" />
-              {job.location}
-            </p>
+          <div className="mt-3 space-y-1.5 text-sm text-[#7a7a92]">
+            <p>{job.company}</p>
+            <p>{job.location}</p>
             {salary && (
-              <p className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-emerald-500/60" />
-                <span className="text-emerald-400">{salary}</span>
-              </p>
+              <p className="text-emerald-400">{salary}</p>
             )}
-            <p className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-[#5a5a70]" />
+            <p className="text-xs text-[#5a5a70]">
               Posted {new Date(job.postedAt).toLocaleDateString()}
             </p>
           </div>
@@ -245,7 +231,7 @@ export default function JobDetailPage() {
           className="h-12 w-full rounded-xl bg-[#c9a55c] text-base font-semibold text-black transition-all hover:bg-[#d4b36a] hover:shadow-[0_0_30px_-5px_rgba(201,165,92,0.4)]"
           onClick={() => setShowOptimize(true)}
         >
-          Optimize &amp; Apply
+          Optimize &amp; Apply for This Role
         </Button>
       </FadeIn>
     </div>
