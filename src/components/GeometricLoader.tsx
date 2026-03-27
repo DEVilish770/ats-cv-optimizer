@@ -1,78 +1,156 @@
 "use client";
 
 /**
- * Symmetrical, self-repeating geometric loader.
- * Four concentric squares rotate in alternating directions,
- * breathing in opacity, creating a seamless infinite loop.
+ * Geometric loader — straight lines forming rotating triangles
+ * and hexagonal wireframes. Pure line-based, no curves.
  */
 export default function GeometricLoader({
   size = "md",
 }: {
   size?: "sm" | "md" | "lg";
 }) {
-  const dim = size === "sm" ? 40 : size === "md" ? 72 : 112;
+  const dim = size === "sm" ? 44 : size === "md" ? 76 : 120;
   const sw = size === "sm" ? 0.4 : 0.6;
 
-  // Each layer: inset from center, rotation duration, direction
-  const layers = [
-    { inset: 4, dur: 10, reverse: false, opacity: 0.12 },
-    { inset: 16, dur: 7, reverse: true, opacity: 0.2 },
-    { inset: 26, dur: 5, reverse: false, opacity: 0.3 },
-    { inset: 34, dur: 3.5, reverse: true, opacity: 0.45 },
-  ];
+  // Hexagon vertices at radius r from center (50,50)
+  function hexPoints(r: number): [number, number][] {
+    return Array.from({ length: 6 }, (_, i) => {
+      const angle = (Math.PI / 3) * i - Math.PI / 2;
+      return [50 + r * Math.cos(angle), 50 + r * Math.sin(angle)] as [number, number];
+    });
+  }
+
+  const outer = hexPoints(44);
+  const mid = hexPoints(28);
+  const inner = hexPoints(14);
 
   return (
     <div className="flex items-center justify-center">
-      <svg
-        width={dim}
-        height={dim}
-        viewBox="0 0 100 100"
-        fill="none"
-        style={{ overflow: "visible" }}
-      >
-        {layers.map((layer, i) => {
-          const half = 50 - layer.inset;
-          const points = `${50 - half},${50 - half} ${50 + half},${50 - half} ${50 + half},${50 + half} ${50 - half},${50 + half}`;
-
-          return (
-            <polygon
-              key={i}
-              points={points}
-              stroke={`rgba(255,255,255,${layer.opacity})`}
-              strokeWidth={sw}
-              fill="none"
-              style={{ transformOrigin: "50px 50px" }}
-            >
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from={layer.reverse ? "360 50 50" : "0 50 50"}
-                to={layer.reverse ? "0 50 50" : "360 50 50"}
-                dur={`${layer.dur}s`}
-                repeatCount="indefinite"
+      <svg width={dim} height={dim} viewBox="0 0 100 100" fill="none">
+        {/* Outer hexagon — slow clockwise */}
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            from="0 50 50"
+            to="360 50 50"
+            dur="12s"
+            repeatCount="indefinite"
+          />
+          {outer.map((p, i) => {
+            const next = outer[(i + 1) % 6];
+            return (
+              <line
+                key={`o${i}`}
+                x1={p[0]} y1={p[1]} x2={next[0]} y2={next[1]}
+                stroke="rgba(255,255,255,0.12)"
+                strokeWidth={sw}
               />
-              <animate
-                attributeName="opacity"
-                values={`${layer.opacity};${layer.opacity * 2.2};${layer.opacity}`}
-                dur={`${layer.dur * 0.8}s`}
-                repeatCount="indefinite"
-              />
-            </polygon>
-          );
-        })}
+            );
+          })}
+        </g>
 
-        {/* Center pulsing dot */}
-        <circle cx="50" cy="50" r="1.5" fill="rgba(255,255,255,0.4)">
+        {/* Mid hexagon — counter-clockwise */}
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            from="360 50 50"
+            to="0 50 50"
+            dur="8s"
+            repeatCount="indefinite"
+          />
+          {mid.map((p, i) => {
+            const next = mid[(i + 1) % 6];
+            return (
+              <line
+                key={`m${i}`}
+                x1={p[0]} y1={p[1]} x2={next[0]} y2={next[1]}
+                stroke="rgba(255,255,255,0.22)"
+                strokeWidth={sw}
+              />
+            );
+          })}
+          {/* Cross-lines connecting alternate mid vertices (two triangles) */}
+          {[0, 2, 4].map((i) => {
+            const next = mid[(i + 2) % 6];
+            return (
+              <line
+                key={`mt${i}`}
+                x1={mid[i][0]} y1={mid[i][1]} x2={next[0]} y2={next[1]}
+                stroke="rgba(255,255,255,0.1)"
+                strokeWidth={sw * 0.7}
+              />
+            );
+          })}
+          {[1, 3, 5].map((i) => {
+            const next = mid[(i + 2) % 6];
+            return (
+              <line
+                key={`mt2${i}`}
+                x1={mid[i][0]} y1={mid[i][1]} x2={next[0]} y2={next[1]}
+                stroke="rgba(255,255,255,0.1)"
+                strokeWidth={sw * 0.7}
+              />
+            );
+          })}
+        </g>
+
+        {/* Inner hexagon — clockwise faster */}
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            from="0 50 50"
+            to="360 50 50"
+            dur="5s"
+            repeatCount="indefinite"
+          />
+          {inner.map((p, i) => {
+            const next = inner[(i + 1) % 6];
+            return (
+              <line
+                key={`in${i}`}
+                x1={p[0]} y1={p[1]} x2={next[0]} y2={next[1]}
+                stroke="rgba(255,255,255,0.35)"
+                strokeWidth={sw}
+              />
+            );
+          })}
+        </g>
+
+        {/* Spokes — connecting inner to outer, slow reverse rotation */}
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            from="360 50 50"
+            to="0 50 50"
+            dur="20s"
+            repeatCount="indefinite"
+          />
+          {outer.map((p, i) => (
+            <line
+              key={`sp${i}`}
+              x1={50} y1={50} x2={p[0]} y2={p[1]}
+              stroke="rgba(255,255,255,0.06)"
+              strokeWidth={sw * 0.5}
+            />
+          ))}
+        </g>
+
+        {/* Breathing opacity overlay on the whole thing */}
+        <circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.5)">
           <animate
             attributeName="r"
-            values="1;2.5;1"
-            dur="2s"
+            values="0.8;1.8;0.8"
+            dur="3s"
             repeatCount="indefinite"
           />
           <animate
             attributeName="opacity"
-            values="0.3;0.7;0.3"
-            dur="2s"
+            values="0.3;0.6;0.3"
+            dur="3s"
             repeatCount="indefinite"
           />
         </circle>

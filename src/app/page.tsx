@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Camera, Search, FileCheck, ArrowRight } from "lucide-react";
+import GeometricBg from "@/components/GeometricBg";
 
 const features = [
   {
@@ -32,12 +33,7 @@ const features = [
 export default function LandingPage() {
   return (
     <div className="noise-bg flex flex-1 flex-col bg-black overflow-hidden">
-      {/* Ambient orbs */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="animate-float absolute -left-32 top-1/4 h-64 w-64 rounded-full bg-[#c9a55c]/8 blur-[100px]" />
-        <div className="animate-pulse-slow absolute -right-24 top-1/3 h-48 w-48 rounded-full bg-blue-500/6 blur-[80px]" />
-        <div className="animate-float absolute bottom-1/4 left-1/2 h-56 w-56 -translate-x-1/2 rounded-full bg-[#c9a55c]/5 blur-[100px]" />
-      </div>
+      <GeometricBg />
 
       <main className="relative flex flex-1 flex-col items-center px-4 py-16 sm:py-24">
         {/* Hero */}
