@@ -35,7 +35,7 @@ export default function LandingPage() {
     <div className="noise-bg flex flex-1 flex-col bg-black overflow-hidden">
       <GeometricBg />
 
-      <main className="relative flex flex-1 flex-col items-center px-4 py-16 sm:py-24">
+      <main className="relative z-10 flex flex-1 flex-col items-center px-4 pt-20 pb-12 sm:pt-28">
         {/* Hero */}
         <div className="mx-auto max-w-2xl text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#c9a55c]/20 bg-[#c9a55c]/8 px-4 py-1.5">
@@ -87,7 +87,7 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="relative py-6 text-center text-sm text-[#3a3a4a]">
+      <footer className="relative z-10 py-6 text-center text-sm text-[#3a3a4a]">
         <div className="mb-2 mx-auto h-px w-32 bg-gradient-to-r from-transparent via-[#c9a55c]/20 to-transparent" />
         ATS CV Optimizer &copy; {new Date().getFullYear()}
       </footer>

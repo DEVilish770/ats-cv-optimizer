@@ -116,7 +116,7 @@
   pointer-events: none;
   z-index: 0;
 }
-.noise-bg > * {
+.noise-bg > *:not([data-bg]) {
   position: relative;
   z-index: 1;
 }

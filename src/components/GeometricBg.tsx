@@ -7,7 +7,7 @@
  */
 export default function GeometricBg() {
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-[0.025]">
+    <div data-bg className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-[0.025]">
       <svg
         width="100%"
         height="100%"
