@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { searchJobsForCV, searchAdzunaJobs } from "@/lib/job-search";
+import { searchJobsForCV, searchAdzunaJobs, searchRemotiveJobs, searchFindworkJobs, searchMuseJobs } from "@/lib/job-search";
 
 export const maxDuration = 30; // Allow up to 30 seconds on Vercel
 
@@ -30,7 +30,19 @@ export async function GET(request: Request) {
         location
       );
     } else if (q) {
-      searchResults = await searchAdzunaJobs(q, location);
+      // Search all sources in parallel for manual queries
+      const [adzuna, remotive, findwork, muse] = await Promise.allSettled([
+        searchAdzunaJobs(q, location),
+        searchRemotiveJobs(q),
+        searchFindworkJobs(q, location),
+        searchMuseJobs(q, location),
+      ]);
+      searchResults = [
+        ...(adzuna.status === "fulfilled" ? adzuna.value : []),
+        ...(remotive.status === "fulfilled" ? remotive.value : []),
+        ...(findwork.status === "fulfilled" ? findwork.value : []),
+        ...(muse.status === "fulfilled" ? muse.value : []),
+      ];
     } else {
       const latestCv = await prisma.cV.findFirst({
         where: { sessionId },
@@ -50,7 +62,7 @@ export async function GET(request: Request) {
       );
     }
 
-    console.log(`[Search] Got ${searchResults.length} results from Adzuna`);
+    console.log(`[Search] Got ${searchResults.length} results from all sources`);
 
     if (searchResults.length === 0) {
       return Response.json({ jobs: [], count: 0 });

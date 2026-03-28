@@ -34,6 +34,13 @@ function formatSalary(min?: number, max?: number, currency?: string) {
   return `Up to ${fmt(max!)}`;
 }
 
+const sourceLabels: Record<string, string> = {
+  adzuna: "Adzuna",
+  remotive: "Remotive",
+  findwork: "Findwork",
+  themuse: "The Muse",
+};
+
 function scoreColor(score: number) {
   if (score >= 80) return "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/15";
   if (score >= 60) return "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/15";
@@ -76,7 +83,7 @@ export default function JobCard({ job }: JobCardProps) {
 
         <div className="mt-3 flex items-center justify-between">
           <span className="rounded-full border border-border bg-secondary px-2.5 py-0.5 text-xs text-muted-foreground">
-            {job.source}
+            {sourceLabels[job.source] || job.source}
           </span>
           <span className="text-xs font-medium text-foreground opacity-0 transition-opacity group-hover:opacity-100">
             View Details &rarr;
