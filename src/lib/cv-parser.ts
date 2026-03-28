@@ -5,10 +5,28 @@ function getClient() {
   return new Anthropic();
 }
 
+/** Retry wrapper for transient Claude API errors (429, 529) */
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err: unknown) {
+      const status = (err as { status?: number }).status;
+      const isRetryable = status === 429 || status === 529;
+      if (!isRetryable || attempt === maxRetries) {
+        if (status === 529) throw new Error("AI service is temporarily overloaded. Please try again in a moment.");
+        if (status === 429) throw new Error("Rate limit reached. Please wait a moment and try again.");
+        throw err;
+      }
+      await new Promise((r) => setTimeout(r, 2000 * Math.pow(2, attempt)));
+    }
+  }
+  throw new Error("Unexpected retry exhaustion");
+}
+
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
-  // Use Claude's native PDF reading — no server-side PDF library needed
   const base64 = buffer.toString("base64");
-  const response = await getClient().messages.create({
+  const response = await withRetry(() => getClient().messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 4096,
     messages: [
@@ -30,13 +48,13 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
         ],
       },
     ],
-  });
+  }));
 
   return response.content[0].type === "text" ? response.content[0].text : "";
 }
 
 export async function extractTextFromImage(base64Image: string): Promise<string> {
-  const response = await getClient().messages.create({
+  const response = await withRetry(() => getClient().messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 4096,
     messages: [
@@ -58,7 +76,7 @@ export async function extractTextFromImage(base64Image: string): Promise<string>
         ],
       },
     ],
-  });
+  }));
 
   return response.content[0].type === "text" ? response.content[0].text : "";
 }
@@ -76,7 +94,6 @@ export async function processCV(
     rawText = await extractTextFromImage(base64);
   }
 
-  // Use Claude to structure the raw text
   const parsed = await parseCV(rawText);
 
   return {

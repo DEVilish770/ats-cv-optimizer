@@ -5,12 +5,37 @@ function getClient() {
   return new Anthropic();
 }
 
+/** Retry wrapper for transient Claude API errors (429, 529) */
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err: unknown) {
+      const status = (err as { status?: number }).status;
+      const isRetryable = status === 429 || status === 529;
+      if (!isRetryable || attempt === maxRetries) {
+        // Clean up error message for the user
+        if (status === 529) {
+          throw new Error("AI service is temporarily overloaded. Please try again in a moment.");
+        }
+        if (status === 429) {
+          throw new Error("Rate limit reached. Please wait a moment and try again.");
+        }
+        throw err;
+      }
+      // Exponential backoff: 2s, 4s, 8s
+      await new Promise((r) => setTimeout(r, 2000 * Math.pow(2, attempt)));
+    }
+  }
+  throw new Error("Unexpected retry exhaustion");
+}
+
 export async function parseCV(rawText: string): Promise<{
   structured: CVStructured;
   targetRole: string;
   targetSkills: string[];
 }> {
-  const response = await getClient().messages.create({
+  const response = await withRetry(() => getClient().messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 4096,
     messages: [
@@ -40,7 +65,7 @@ Return a JSON object with exactly this structure:
 Return ONLY valid JSON, no markdown formatting.`,
       },
     ],
-  });
+  }));
 
   const text = response.content[0].type === "text" ? response.content[0].text : "";
   const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
@@ -66,7 +91,7 @@ Return ONLY valid JSON, no markdown formatting.`,
 export async function analyzeJobRequirements(
   jobDescription: string
 ): Promise<JobRequirements> {
-  const response = await getClient().messages.create({
+  const response = await withRetry(() => getClient().messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 2048,
     messages: [
@@ -90,7 +115,7 @@ Return a JSON object with exactly this structure:
 Return ONLY valid JSON, no markdown formatting.`,
       },
     ],
-  });
+  }));
 
   const text = response.content[0].type === "text" ? response.content[0].text : "";
   const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
@@ -102,7 +127,7 @@ export async function optimizeCV(
   jobRequirements: JobRequirements,
   jobDescription: string
 ): Promise<OptimizationResult> {
-  const response = await getClient().messages.create({
+  const response = await withRetry(() => getClient().messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 8192,
     messages: [
@@ -157,7 +182,7 @@ Return a JSON object with exactly this structure:
 Return ONLY valid JSON, no markdown formatting.`,
       },
     ],
-  });
+  }));
 
   const text = response.content[0].type === "text" ? response.content[0].text : "";
   const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
